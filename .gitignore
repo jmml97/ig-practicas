@@ -29,3 +29,4 @@ include
 objs
 plys
 srcs
+.DS_Store
