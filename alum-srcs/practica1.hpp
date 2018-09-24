@@ -8,8 +8,8 @@
 #ifndef IG_PRACTICA1_HPP
 #define IG_PRACTICA1_HPP
 
-void P1_Inicializar(  ) ;
-bool P1_FGE_PulsarTeclaCaracter(  unsigned char tecla ) ;
-void P1_DibujarObjetos( ContextoVis & cv ) ;
+void P1_Inicializar();
+bool P1_FGE_PulsarTeclaCaracter(unsigned char tecla);
+void P1_DibujarObjetos(ContextoVis &cv);
 
 #endif
