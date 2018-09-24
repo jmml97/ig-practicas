@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../include",
+                "${workspaceRoot}/../include",
+                "/usr/local/include",
+                "/System/Library/Frameworks/"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks",
+                "/System/Library/Frameworks/"
+            ],
+            "forcedInclude": [ 
+                "${workspaceFolder}/.vscode/include-fix.h"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
