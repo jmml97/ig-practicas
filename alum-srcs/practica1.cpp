@@ -29,6 +29,9 @@ void P1_Inicializar(  )
    // COMPLETAR: práctica 1: asignar valores a 'objeto[0]' y 'objeto[1]'
    // (punteros a mallas)
 
+   objeto[0] = new Cubo();
+   objeto[1] = new Tetraedro();
+
    cout << "hecho." << endl << flush ;
 }
 
@@ -64,5 +67,5 @@ void P1_DibujarObjetos( ContextoVis & cv )
 {
    // COMPLETAR: práctica 1: invocar a 'visualizarGL' para el objeto activo actual
    // ...
-
+   objeto[objetoActivo]->visualizarGL(cv);
 }
