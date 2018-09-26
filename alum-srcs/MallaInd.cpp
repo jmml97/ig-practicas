@@ -36,59 +36,104 @@ void MallaInd::calcular_normales() {
 // -----------------------------------------------------------------------------
 
 void MallaInd::visualizarDE_MI(ContextoVis& cv) {
-  // COMPLETAR: en la práctica 1: visualizar en modo inmediato (glDrawElements)
-  // ...........
-
+  /* void glEnableClientState(GLenum cap)                                     */
+  /* Permite activar las funcionalidades 'cap' en el cliente.                 */
+  /* GL_VERTEX_ARRAY: Si está activada, el array de vértices está activado    */
+  /* para la escritura y usado durante el renderizado.                        */
   glEnableClientState(GL_VERTEX_ARRAY);
+
+  /* void glVertexPointer(GLint size, GLenum type, GLsizei stride,            */
+  /*                      const GLvoid* pointer)                              */
+  /* Define la localización y el formato de los datos de un array de          */
+  /* coordenadas vértices a usar cuando se renderice. 'size' especifica el    */
+  /* número de coordenadas por vértice, 'type', el tipo de cada coordenada, y */
+  /* 'stride', el incremento de bytes en el array de un vértice a otro        */
   glVertexPointer(3, GL_FLOAT, 0, tabla_cord_vert.data());
+
+  /* void glDrawArrays(GLenum mode, GLint first, GLsizei count)               */
+  /* Construye una secuencia de primitivas geométricas utilizando elementos   */
+  /* de array, empezando en 'first' y terminando en 'count' + 1. 'mode'       */
+  /* especifica qué tipo de primitivas se van a usar.                         */
   glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT,
                  tabla_caras.data());
+
+  /* void glEnableClientState(GLenum cap)                                     */
+  /* Permite desactivar las funcionalidades 'cap' en el cliente.              */
   glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 // ----------------------------------------------------------------------------
 void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
-  static GLuint id_vbo = 0;
+  static GLuint id_buffer_vert, id_buffer_caras;
 
-  if (id_vbo == 0) {
-    glGenBuffers(1, &id_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, id_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * tabla_cord_vert.size(),
+  /* Primero vamos a crear el buffer object para los vértices                 */
+  if (id_buffer_vert == 0) {
+    /* void glGenBuffers(GLsizei n, GLuint * buffers)                         */
+    /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
+    /* los almacena en el array 'buffers'.                                    */
+    glGenBuffers(1, &id_buffer_vert);
+
+    /* void glBindBuffers(GLenum target*, GLuint buffer)                      */
+    /* Enlaza el buffer object llamado 'buffer' al punto de enlace 'target'.  */
+    /* Si es la primera vez que se enlaza el buffer con dicho nombre, se      */
+    /* crea un buffer object con ese nombre.                                  */
+    glBindBuffer(GL_ARRAY_BUFFER, id_buffer_vert);
+
+    /* glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data,       */
+    /*              GLenum usage)                                             */
+    /* Reserva 'size' bytes de memoria para el objeto enlazado con 'target'.  */
+    /* Si 'data' no es NULL, copia esa información a dicho espacio. 'usage'   */
+    /* se utiliza para indicar al programa cuál es el uso que se le va a dar  */
+    /* a los datos.                                                           */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
                  tabla_cord_vert.data(), GL_STATIC_DRAW);
   } else {
-    glBindBuffer(GL_ARRAY_BUFFER, id_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, id_buffer_vert);
+  }
+
+  /* Ahora vamos a crear el buffer object para las caras siguiendo el mismo   */
+  /* proceso.                                                                 */
+  if (id_buffer_caras == 0) {
+    glGenBuffers(1, &id_buffer_caras);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_buffer_caras);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 sizeof(unsigned) * 3 * tabla_caras.size(), tabla_caras.data(),
+                 GL_STATIC_DRAW);
+  } else {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_buffer_caras);
   }
 
   glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(3, GL_FLOAT, 0, 0);
-  glDrawArrays(GL_TRIANGLES, 0, 3 * tabla_cord_vert.size());
+
+  /* El puntero relativo al VBO es NULL. */
+  glVertexPointer(3, GL_FLOAT, 0, NULL);
+  /* De nuevo, el puntero relativo al VBO es NULL. */
+  glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT, NULL);
+
   glDisableClientState(GL_VERTEX_ARRAY);
+  /* Deshacemos los enlaces a los buffer objects. */
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // -----------------------------------------------------------------------------
 
 void MallaInd::visualizarGL(ContextoVis& cv) {
-  // COMPLETAR: práctica 1: visualizar en modo inmediato o en modo diferido
-  // (VBOs), (tener en cuenta el modo de visualización en 'cv' (alambre, sólido,
-  // etc..))
-  //
-  // .............
-
+  /* Cambiamos el modo de visualización según lo indicado en 'cv' */
   switch (cv.modoVis) {
     case modoPuntos:
       glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
       break;
-    case modoAlambre:
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      break;
     case modoSolido:
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       break;
+    case modoAlambre:
     default:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       break;
   }
 
+  /* Seleccionamos la función a utilizar según vayamos a usar VBOs o no. */
   if (cv.usarVBOs) {
     visualizarDE_VBOs(cv);
   } else {
