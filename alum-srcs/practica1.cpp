@@ -23,16 +23,15 @@ using namespace std ;
 // Se llama una vez al inicio, cuando ya se ha creado la ventana e
 // incializado OpenGL.
 
-void P1_Inicializar(  )
-{
-   cout << "Creando objetos de la práctica 1 .... " << flush ;
-   // COMPLETAR: práctica 1: asignar valores a 'objeto[0]' y 'objeto[1]'
-   // (punteros a mallas)
+void P1_Inicializar() {
+  /* Configuramos el entorno para ver mejor los puntos y las líneas */
+  glPointSize(4.0);
+  glLineWidth(4.0);
 
-   objeto[0] = new Cubo();
-   objeto[1] = new Tetraedro();
-
-   cout << "hecho." << endl << flush ;
+  cout << "Creando objetos de la práctica 1 .... " << flush;
+  objeto[0] = new Cubo();
+  objeto[1] = new Tetraedro();
+  cout << "hecho." << endl << flush;
 }
 
 // ---------------------------------------------------------------------
