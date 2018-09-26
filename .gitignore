@@ -14,7 +14,6 @@ cauce.cpp
 cauce.hpp
 grafo-escena.cpp
 grafo-escena.hpp
-main.cpp
 makefile
 materiales.cpp
 materiales.hpp
