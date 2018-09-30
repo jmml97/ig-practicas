@@ -18,6 +18,7 @@
 
 // includes en ../include
 #include "aux.hpp"  // include cabeceras de opengl / glut / glut / glew
+#include "shaders.hpp"
 
 
 #include "CamaraInter.hpp"
@@ -67,6 +68,8 @@ GLFWwindow *
    glfw_window       = nullptr ; // puntero a la ventana GLFW
 ContextoVis
    contextoVis ;                 // contexto de visualización actual (incluye modo de visualización)
+
+GLuint idProg; /* ID del programa shader que podemos usar */
 
 // puntero a función que se ejecuta cuando no hay eventos pendientes
 // (si es null no se hace nada)
@@ -185,6 +188,8 @@ void VisualizarFrame()
 {
    using namespace std ;
    using namespace chrono ;
+
+   glUseProgram(idProg); /* Usar nuestro shader personalizado */
 
    // hacer que la ventana GLFW sea la ventana actual
    glfwMakeContextCurrent( glfw_window );
@@ -642,7 +647,8 @@ void Inicializa_OpenGL( )
 
    Inicializa_GLEW();
 
-
+  /* Creamos un programa a partir de los shaders que hemos programado */
+  idProg = CrearPrograma("simple_fs.glsl", "simple_vs.glsl");
 
 
    // ya está
