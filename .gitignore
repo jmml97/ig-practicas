@@ -2,10 +2,6 @@ Camara.cpp
 Camara.hpp
 CamaraInter.cpp
 CamaraInter.hpp
-MallaPLY.cpp
-MallaPLY.hpp
-MallaRevol.cpp
-MallaRevol.hpp
 Objeto3D.cpp
 Objeto3D.hpp
 Parametro.cpp
