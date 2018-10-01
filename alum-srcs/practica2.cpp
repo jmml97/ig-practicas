@@ -28,8 +28,8 @@ static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr };
 void P2_Inicializar(  )
 {
    cout << "Creando objetos de la práctica 2 .... " << flush ;
-   // COMPLETAR: práctica 2: inicializar objeto de revolución y objeto PLY (en 'objeto2')
-   // ...
+   objetos2[0] = new MallaPLY("../plys/beethoven.ply");
+   objetos2[1] = new MallaRevol("../plys/peon.ply", 10, false, false);
 
    cout << "hecho." << endl << flush ;
 }
@@ -50,7 +50,7 @@ bool P2_FGE_PulsarTeclaCaracter( unsigned char tecla )
       return false ;
 
    objetoActivo2 = (objetoActivo2+1) % numObjetos2 ;
-   cout << "práctica 1: nuevo objeto activo es: " << objetoActivo2 ;
+   cout << "práctica 2: nuevo objeto activo es: " << objetoActivo2 ;
    if ( objetos2[objetoActivo2] != nullptr )
       cout << " (" << objetos2[objetoActivo2]->leerNombre() << ")." << endl ;
    else
@@ -63,9 +63,6 @@ bool P2_FGE_PulsarTeclaCaracter( unsigned char tecla )
 // se debe de usar el modo de dibujo que hay en el parámetro 'cv'
 // (se accede con 'cv.modoVisu')
 
-void P2_DibujarObjetos( ContextoVis & cv )
-{
-   // COMPLETAR: práctica 2: invocar a 'visualizarGL' para el objeto activo actual en 'objetos2'
-   // ...
-
+void P2_DibujarObjetos(ContextoVis& cv) {
+  objetos2[objetoActivo2]->visualizarGL(cv);
 }
