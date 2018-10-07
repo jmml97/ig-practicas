@@ -29,8 +29,8 @@ void P2_Inicializar(  )
 {
    cout << "Creando objetos de la práctica 2 .... " << flush ;
    //objetos2[0] = new MallaPLY("../plys/beethoven.ply");
-   objetos2[0] = new Cilindro(2, 4, 40, true, true);
-   objetos2[1] = new MallaRevol("../plys/peon.ply", 10, true, false);
+   objetos2[0] = new Esfera(40, 40, true, true);
+   objetos2[1] = new MallaRevol("../plys/peon.ply", 10, true, true);
 
    cout << "hecho." << endl << flush ;
 }
