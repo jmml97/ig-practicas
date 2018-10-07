@@ -28,8 +28,9 @@ static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr };
 void P2_Inicializar(  )
 {
    cout << "Creando objetos de la práctica 2 .... " << flush ;
-   objetos2[0] = new MallaPLY("../plys/beethoven.ply");
-   objetos2[1] = new MallaRevol("../plys/peon.ply", 10, false, false);
+   //objetos2[0] = new MallaPLY("../plys/beethoven.ply");
+   objetos2[0] = new Cilindro(2, 4, 40, true, true);
+   objetos2[1] = new MallaRevol("../plys/peon.ply", 10, true, false);
 
    cout << "hecho." << endl << flush ;
 }
