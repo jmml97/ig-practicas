@@ -105,9 +105,42 @@ Cilindro::Cilindro(float radio, float altura, int num_per,
     : MallaRevol("revolución de un cilindro") {
   std::vector<Tupla3f> perfil_original;
 
-  for (int i = - (altura / 2); i <= (altura / 2); i++) {
+  for (int i = -(altura / 2); i <= (altura / 2); i++) {
     perfil_original.push_back(Tupla3f(radio, i, 0));
   }
 
-  definirMallaRevol(perfil_original, num_per, perfil_original.size(), crear_tapas, cerrar_malla);
+  definirMallaRevol(perfil_original, num_per, perfil_original.size(),
+                    crear_tapas, cerrar_malla);
+}
+
+Cono::Cono(int num_per, int num_vert_per, const bool crear_tapas,
+           const bool cerrar_malla)
+    : MallaRevol("revolución de un cono") {
+  std::vector<Tupla3f> perfil_original;
+
+  for (size_t i = 0; i < num_vert_per; i++) {
+    /* El número de vértices por perfil determina la distancia entre vértices */
+    float x = 1 - (float)i / (num_vert_per - 1);
+    /* y = -x + 1 */
+    perfil_original.push_back(Tupla3f(x, -x + 1, 0));
+  }
+
+  definirMallaRevol(perfil_original, num_per, perfil_original.size(),
+                    crear_tapas, cerrar_malla);
+}
+
+Esfera::Esfera(int num_per, int num_vert_per, const bool crear_tapas,
+               const bool cerrar_malla)
+    : MallaRevol("revolución de una esfera") {
+  std::vector<Tupla3f> perfil_original;
+
+  for (size_t i = 0; i <= num_vert_per; i++) {
+    /* El número de vértices por perfil determina la distancia entre vértices */
+    float y = 1 - (float)2 * i / (num_vert_per - 1);
+    /* x = sqrt(1 - y^2) */
+    perfil_original.push_back(Tupla3f(sqrt(1.0 - y * y), y, 0));
+  }
+
+  definirMallaRevol(perfil_original, num_per, perfil_original.size(),
+                    crear_tapas, cerrar_malla);
 }

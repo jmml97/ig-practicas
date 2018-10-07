@@ -36,5 +36,18 @@ class MallaRevol : public MallaInd {
 
 class Cilindro : public MallaRevol {
  public:
-  Cilindro(float radio, float altura, int num_per, const bool crear_tapas, const bool cerrar_malla);
+  Cilindro(float radio, float altura, int num_per, const bool crear_tapas,
+           const bool cerrar_malla);
+};
+
+class Cono : public MallaRevol {
+ public:
+  Cono(int num_vert_per, int num_per, const bool crear_tapas,
+       const bool cerrar_malla);
+};
+
+class Esfera : public MallaRevol {
+ public:
+  Esfera(int num_per, int num_vert_per, const bool crear_tapas,
+         const bool cerrar_malla);
 };
