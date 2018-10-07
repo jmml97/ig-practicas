@@ -627,10 +627,12 @@ void Inicializa_OpenGL( )
    glColor3f( 0.7, 0.2, 0.4 ) ;
 
    // establecer ancho de línea
-   glLineWidth( 1.2 );
+   //glLineWidth( 1.2 );
+   glLineWidth( 1.8 );
 
    // establecer tamaño de los puntos
-   glPointSize( 1.7 );
+   //glPointSize( 1.7 );
+   glPointSize(2.4);
 
    // establecer modo de visualización de prim.
    // (las tres posibilidades son: GL_POINT, GL_LINE, GL_FILL)

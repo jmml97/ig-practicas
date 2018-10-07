@@ -24,10 +24,6 @@ using namespace std ;
 // incializado OpenGL.
 
 void P1_Inicializar() {
-  /* Configuramos el entorno para ver mejor los puntos y las líneas */
-  glPointSize(4.0);
-  glLineWidth(4.0);
-
   cout << "Creando objetos de la práctica 1 .... " << flush;
   objeto[0] = new Cubo();
   objeto[1] = new Tetraedro();
