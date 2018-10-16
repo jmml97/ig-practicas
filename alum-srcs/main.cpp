@@ -43,8 +43,8 @@ using namespace std ;
 constexpr int
    numPracticas      = 5 ;       // número total de prácticas
 int
-   ventana_tam_x     = 1024,     // ancho inicial y actual de la ventana, en pixels
-   ventana_tam_y     = 1024,     // alto inicial actual de la ventana, en pixels
+   ventana_tam_x     = 400,     // ancho inicial y actual de la ventana, en pixels
+   ventana_tam_y     = 400,     // alto inicial actual de la ventana, en pixels
    practicaActual    = 1 ,       // practica actual (cambiable por teclado) (1,2,3,4 o 5)
    mouse_pos_factor  = 1 ,       // factor de conversión para displays "retina" en macOS
    x_ant_mabd,                   // coord. de ratón X anterior en modo arrastrar con botón derecho pulsado
@@ -695,6 +695,11 @@ void BucleEventosGLFW()
    // ejecutar el bucle de gestión de eventos hasta el final de la aplicación
 
    terminar_programa = false ;
+
+  #ifdef OSX
+  glfwPollEvents();
+  glfwSetWindowSize(glfw_window, ventana_tam_x - 1, ventana_tam_y - 1);
+  #endif
 
    while ( ! terminar_programa  )
    {
