@@ -2,14 +2,8 @@ Camara.cpp
 Camara.hpp
 CamaraInter.cpp
 CamaraInter.hpp
-Objeto3D.cpp
-Objeto3D.hpp
-Parametro.cpp
-Parametro.hpp
 cauce.cpp
 cauce.hpp
-grafo-escena.cpp
-grafo-escena.hpp
 makefile
 materiales.cpp
 materiales.hpp
