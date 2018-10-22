@@ -122,11 +122,11 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     tabla_cord_vert.push_back(centro_tapa_inferior);
     for (size_t i = 0; i < nper; i++) {
       tabla_caras.push_back(
-          Tupla3u(i * nvp, tabla_cord_vert.size() - 1, i * nvp + nvp));
+          Tupla3u(i * nvp, tabla_cord_vert.size() - 1, (i * nvp + nvp) % (tabla_cord_vert.size() - 1)));
     }
 
     /* Obtenemos el último vértice del perfil original */
-    Tupla3f ultimo_vertice = tabla_cord_vert[nvp - 1];
+    Tupla3f ultimo_vertice = tabla_cord_vert[tabla_cord_vert.size() - 2];
 
     /* Centramos el vértice en el eje de giro */
     Tupla3f centro_tapa_superior = Tupla3f(0, ultimo_vertice[1], 0);
@@ -139,6 +139,9 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
                                     tabla_cord_vert.size() - 1,
                                     i * nvp + nvp + nvp - 1));
     }
+
+    /* Última cara */
+    tabla_caras.push_back(Tupla3u(nper * nvp - 1, tabla_cord_vert.size() - 1, nvp - 1));
   }
 }
 
@@ -153,8 +156,9 @@ Cilindro::Cilindro(float radio, float altura, int num_per,
     : MallaRevol("revolución de un cilindro") {
   std::vector<Tupla3f> perfil_original;
 
-  for (int i = -(altura / 2); i <= (altura / 2); i++) {
-    perfil_original.push_back(Tupla3f(radio, i, 0));
+  // Construir perfil
+  for (unsigned i = 0; i < num_per; i++) {
+    perfil_original.push_back({radio, altura * ((float)i / (num_per - 1)), 0.0});
   }
 
   definirMallaRevol(perfil_original, num_per, perfil_original.size(),
@@ -190,11 +194,11 @@ Esfera::Esfera(int num_per, int num_vert_per, const bool crear_tapas,
     : MallaRevol("revolución de una esfera") {
   std::vector<Tupla3f> perfil_original;
 
-  for (size_t i = 0; i <= num_vert_per; i++) {
+  for (size_t i = 0; i < num_vert_per; i++) {
     /* El número de vértices por perfil determina la distancia entre vértices */
-    float y = 1 - (float)2 * i / (num_vert_per - 1);
+    float y = -1 + (float)2 * i / (num_vert_per - 1);
     /* x = sqrt(1 - y^2) */
-    perfil_original.push_back(Tupla3f(sqrt(1.0 - y * y), y, 0));
+    perfil_original.push_back(Tupla3f(sqrt(1.0 - y * y), y, 0.0));
   }
 
   definirMallaRevol(perfil_original, num_per, perfil_original.size(),

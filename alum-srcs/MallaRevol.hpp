@@ -29,7 +29,7 @@ class MallaRevol : public MallaInd {
                          const unsigned num_per, const unsigned num_vert_per,
                          const bool crear_tapas, const bool cerrar_malla);
   void generarMallaRevol(std::vector<Tupla3f> perfil_original,
-                       const bool crear_tapas, const bool cerrar_malla);
+                         const bool crear_tapas, const bool cerrar_malla);
 };
 
 #endif
@@ -38,6 +38,7 @@ class Cilindro : public MallaRevol {
  public:
   Cilindro(float radio, float altura, int num_per, const bool crear_tapas,
            const bool cerrar_malla);
+  Cilindro() : Cilindro(1, 1, 20, true, true) {};
 };
 
 class Cono : public MallaRevol {
@@ -50,4 +51,5 @@ class Esfera : public MallaRevol {
  public:
   Esfera(int num_per, int num_vert_per, const bool crear_tapas,
          const bool cerrar_malla);
+  Esfera() : Esfera(100, 100, true, true){};
 };
