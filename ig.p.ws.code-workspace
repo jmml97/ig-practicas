@@ -33,7 +33,8 @@
 			"stdexcept": "cpp",
 			"type_traits": "cpp",
 			"typeinfo": "cpp",
-			"algorithm": "cpp"
+			"algorithm": "cpp",
+			"iostream": "cpp"
 		}
 	}
 }
