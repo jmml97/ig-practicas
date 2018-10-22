@@ -27,6 +27,7 @@
 #include "Objeto3D.hpp"
 #include "materiales.hpp"
 #include "matrices-tr.hpp"
+#include "MallaRevol.hpp"
 
 // *********************************************************************
 // declaración adelantada de estructura para un nodo del grafo de escena
@@ -117,6 +118,60 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena {
   void siguienteCuadro();
 };
 
-#endif  // GRAFO_ESCENA_HPP
+// *********************************************************************
+// Base del Brazo Mecánico
+
+class Base : public NodoGrafoEscena {
+  public:
+   Base();
+};
 
 // *********************************************************************
+// Articulaciones del Brazo del Brazo Mecánico
+
+class Articulacion : public NodoGrafoEscena {
+  public:
+   Articulacion();
+};
+
+// *********************************************************************
+// Articulaciones del Brazo del Brazo Mecánico
+
+class Articulaciones : public NodoGrafoEscena {
+  public:
+   Articulaciones();
+};
+
+// *********************************************************************
+// Brazo del Brazo Mecánico
+
+class Brazo : public NodoGrafoEscena {
+  public:
+   Brazo();
+};
+
+// *********************************************************************
+// Pinza de la Cabeza del Brazo Mecánico
+
+class Pinza : public NodoGrafoEscena {
+  public:
+   Pinza();
+};
+
+// *********************************************************************
+// Cabeza del Brazo Mecánico
+
+class Cabeza : public NodoGrafoEscena {
+  public:
+   Cabeza();
+};
+
+// *********************************************************************
+// Brazo Mecánico
+
+class BrazoMecanico : public NodoGrafoEscena {
+  public:
+   BrazoMecanico();
+};
+
+#endif  // GRAFO_ESCENA_HPP

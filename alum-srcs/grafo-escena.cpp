@@ -78,6 +78,19 @@ EntradaNGE::~EntradaNGE() {
 void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
   // COMPLETAR: práctica 3: recorrer las entradas y visualizar el nodo
   // ........
+  glMatrixMode(GL_MODELVIEW); /* Operamos sobre la modelview */
+  glPushMatrix();
+
+  for (auto entrada : entradas) {
+    if (entrada.tipo == TipoEntNGE::objeto) {
+      entrada.objeto->visualizarGL(cv);
+    } else {
+      glMatrixMode(GL_MODELVIEW);
+      glMultMatrixf(*(entrada.matriz));
+    }
+  }
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
 }
 // -----------------------------------------------------------------------------
 
@@ -100,6 +113,8 @@ unsigned NodoGrafoEscena::agregar(const EntradaNGE& entrada) {
   // COMPLETAR: práctica 3: agregar la entrada al nodo, devolver índice de la
   // entrada
   // ........
+  entradas.push_back(entrada);
+  return entradas.size() - 1;
 }
 // -----------------------------------------------------------------------------
 // construir una entrada y añadirla (al final)
@@ -173,4 +188,83 @@ Parametro* NodoGrafoEscenaParam::leerPtrParametro(unsigned i) {
 void NodoGrafoEscenaParam::siguienteCuadro() {
   // COMPLETAR: práctica 3: actualizar todos los parámetros al siguiente cuadro
   // ........
+}
+
+// *********************************************************************
+// Base del Brazo Mecánico
+
+Base::Base() {
+  agregar(MAT_Escalado(2, 0.1, 2));
+  agregar(new Cilindro);
+}
+
+// *********************************************************************
+// Articulacion del Brazo del Brazo Mecánico
+
+Articulacion::Articulacion() { 
+  agregar(MAT_Escalado(0.4, 0.4, 0.4));
+  agregar(new Esfera);
+}
+
+// *********************************************************************
+// Articulaciones del Brazo del Brazo Mecánico
+
+Articulaciones::Articulaciones() { 
+  agregar(MAT_Traslacion(0, 0.8, 0));
+  agregar(new Articulacion);
+  agregar(MAT_Traslacion(0, 1.4, 0));
+  agregar(new Articulacion);
+  agregar(MAT_Traslacion(0, 1.4, 0));
+  agregar(new Articulacion);
+}
+
+// *********************************************************************
+// Brazo del Brazo Mecánico
+
+Brazo::Brazo() {
+  agregar(new Articulaciones);
+  agregar(new Cilindro(0.2, 0.5, 100, true, true));
+  agregar(MAT_Traslacion(0, 0.9, 0));
+  agregar(new Cilindro(0.2, 1, 100, true, true));
+  agregar(MAT_Traslacion(0, 1.4, 0));
+  agregar(new Cilindro(0.2, 1, 100, true, true));
+  agregar(MAT_Traslacion(0, 1.4, 0));
+  agregar(new Cilindro(0.2, 0.5, 100, true, true));
+}
+
+// *********************************************************************
+// Pinza de la Cabeza del Brazo Mecánico
+
+Pinza::Pinza() {
+  agregar(MAT_Escalado(0.08, 0.6, 0.1));
+  agregar(new Cilindro);
+}
+
+// *********************************************************************
+// Cabeza del Brazo Mecánico
+
+Cabeza::Cabeza() {
+  agregar(new Cilindro(0.5, 0.1, 20, true, true));
+  agregar(MAT_Traslacion(0.3, 0, 0));
+  agregar(new Pinza);
+  agregar(MAT_Traslacion(-0.6, 0, 0));
+  agregar(new Pinza);
+}
+
+// *********************************************************************
+// Brazo Mecánico
+
+BrazoMecanico::BrazoMecanico() {
+  agregar(new Base);
+  agregar(MAT_Traslacion(0, 0.1, 0));
+  agregar(new Brazo);
+  agregar(MAT_Traslacion(0, 4.2, 0));
+  agregar(new Cabeza);
+
+  // agregar(MAT_Traslacion(0, 1, 0));
+  // agregar(MAT_Escalado(0.4, 0.4, 0.4));
+  // agregar(new Esfera);
+  // agregar(MAT_Traslacion(0, 1, 0));
+  // agregar(MAT_Escalado(0.4, 0.4, 0.4));
+  // agregar(new Esfera); /* Radio 1, centrada en el origen */
 }
