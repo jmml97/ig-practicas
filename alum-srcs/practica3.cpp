@@ -9,6 +9,7 @@
 #include "tuplasg.hpp"   // Tupla3f
 #include "practicas.hpp"
 #include "practica3.hpp"
+#include "grafo-escena.hpp"
 
 
 
@@ -16,9 +17,7 @@ using namespace std ;
 
 // COMPLETAR: práctica 3: declarar variables de la práctica 3 (static)
 // .................
-
-
-
+static BrazoMecanico *objeto;
 
 // ---------------------------------------------------------------------
 // Función para implementar en la práctica 1 para inicialización.
@@ -30,8 +29,8 @@ void P3_Inicializar(  )
    cout << "Creando objetos de la práctica 3 .... " << flush ;
    // COMPLETAR: práctica 3: inicialización de objetos de la práctica 3
    // .................
-
-   cout << "hecho." << endl << flush ;
+   objeto = new BrazoMecanico();
+   cout << "hecho." << endl << flush;
 }
 
 // ---------------------------------------------------------------------
@@ -101,8 +100,7 @@ void P3_DibujarObjetos( ContextoVis & cv )
 {
    // COMPLETAR: práctica 3: visualizar el objeto de la práctica 3
    // ....
-
-
+   objeto->visualizarGL(cv);
 }
 
 //--------------------------------------------------------------------------
