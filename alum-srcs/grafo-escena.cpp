@@ -141,6 +141,14 @@ Matriz4f* NodoGrafoEscena::leerPtrMatriz(unsigned indice) {
   // COMPLETAR: práctica 3: devolver puntero la matriz en ese índice
   //   (debe de dar error y abortar si no hay una matriz en esa entrada)
   // ........
+  Matriz4f* ptr;
+  try {
+    ptr = entradas[indice].matriz;
+  } catch(std::string e) {
+    std::cout << e << std::endl;
+  }
+
+  return ptr;
 }
 // -----------------------------------------------------------------------------
 // si 'centro_calculado' es 'false', recalcula el centro usando los centros
@@ -175,6 +183,7 @@ bool NodoGrafoEscena::buscarObjeto(
 int NodoGrafoEscenaParam::numParametros() {
   // COMPLETAR: práctica 3: indicar cuantos parámetros hay
   // ........
+  return parametros.size();
 }
 // -----------------------------------------------------------------------------
 
@@ -182,12 +191,16 @@ int NodoGrafoEscenaParam::numParametros() {
 Parametro* NodoGrafoEscenaParam::leerPtrParametro(unsigned i) {
   // COMPLETAR: práctica 3: devolver puntero al i-ésimo parámetro
   // ........
+  return &parametros[i];
 }
 // -----------------------------------------------------------------------------
 
 void NodoGrafoEscenaParam::siguienteCuadro() {
   // COMPLETAR: práctica 3: actualizar todos los parámetros al siguiente cuadro
   // ........
+  for (auto p : parametros) {
+    p.siguiente_cuadro();
+  }
 }
 
 // *********************************************************************
@@ -260,11 +273,4 @@ BrazoMecanico::BrazoMecanico() {
   agregar(new Brazo);
   agregar(MAT_Traslacion(0, 4.2, 0));
   agregar(new Cabeza);
-
-  // agregar(MAT_Traslacion(0, 1, 0));
-  // agregar(MAT_Escalado(0.4, 0.4, 0.4));
-  // agregar(new Esfera);
-  // agregar(MAT_Traslacion(0, 1, 0));
-  // agregar(MAT_Escalado(0.4, 0.4, 0.4));
-  // agregar(new Esfera); /* Radio 1, centrada en el origen */
 }
