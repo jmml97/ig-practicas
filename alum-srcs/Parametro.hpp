@@ -31,7 +31,7 @@ class Parametro {
   float valor_norm, /* Valor actual, normalizado y no acotado (crece desde 0) */
       velocidad;    /* Velocidad actual (se suma a valor_norm) */
 
-  static constexpr float v0 = 0.1;
+  static constexpr float v0 = 1;
   static constexpr float delta = 0.1;
   static constexpr float a = 0.1;
 
