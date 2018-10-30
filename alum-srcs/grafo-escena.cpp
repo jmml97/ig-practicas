@@ -181,24 +181,18 @@ bool NodoGrafoEscena::buscarObjeto(
 // -----------------------------------------------------------------------------
 // devuelve el numero de grados de libertad
 int NodoGrafoEscenaParam::numParametros() {
-  // COMPLETAR: práctica 3: indicar cuantos parámetros hay
-  // ........
   return parametros.size();
 }
 // -----------------------------------------------------------------------------
 
 // devuelve un puntero al i-ésimo grado de libertad
 Parametro* NodoGrafoEscenaParam::leerPtrParametro(unsigned i) {
-  // COMPLETAR: práctica 3: devolver puntero al i-ésimo parámetro
-  // ........
   return &parametros[i];
 }
 // -----------------------------------------------------------------------------
 
 void NodoGrafoEscenaParam::siguienteCuadro() {
-  // COMPLETAR: práctica 3: actualizar todos los parámetros al siguiente cuadro
-  // ........
-  for (auto p : parametros) {
+  for (auto &p : parametros) {
     p.siguiente_cuadro();
   }
 }
@@ -214,35 +208,50 @@ Base::Base() {
 // *********************************************************************
 // Articulacion del Brazo del Brazo Mecánico
 
-Articulacion::Articulacion() { 
+Articulacion::Articulacion() {
+  alpha = 0;
   agregar(MAT_Escalado(0.4, 0.4, 0.4));
   agregar(new Esfera);
 }
 
-// *********************************************************************
-// Articulaciones del Brazo del Brazo Mecánico
+Articulacion::Articulacion(float alpha_inicial) {
+  alpha = alpha_inicial;
+  agregar(MAT_Rotacion(alpha_inicial, 0, 0, 1));
+  agregar(MAT_Escalado(0.4, 0.4, 0.4));
+  agregar(new Esfera);
+}
 
-Articulaciones::Articulaciones() { 
-  agregar(MAT_Traslacion(0, 0.8, 0));
-  agregar(new Articulacion);
-  agregar(MAT_Traslacion(0, 1.4, 0));
-  agregar(new Articulacion);
-  agregar(MAT_Traslacion(0, 1.4, 0));
-  agregar(new Articulacion);
+void Articulacion::fijarAlpha(float alpha_nuevo) {
+  alpha = alpha_nuevo;
+  *(entradas[0].matriz) = MAT_Rotacion(alpha_nuevo, 0, 0, 1);
 }
 
 // *********************************************************************
 // Brazo del Brazo Mecánico
 
-Brazo::Brazo() {
-  agregar(new Articulaciones);
+Brazo::Brazo(float alpha_inicial) {
+  indice_brazo = agregar(MAT_Rotacion(10, 0, 1, 0));
   agregar(new Cilindro(0.2, 0.5, 100, true, true));
-  agregar(MAT_Traslacion(0, 0.9, 0));
+  agregar(MAT_Traslacion(0, 0.8, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 1, 100, true, true));
-  agregar(MAT_Traslacion(0, 1.4, 0));
+  agregar(MAT_Traslacion(0, 1.3, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 1, 100, true, true));
-  agregar(MAT_Traslacion(0, 1.4, 0));
-  agregar(new Cilindro(0.2, 0.5, 100, true, true));
+  agregar(MAT_Traslacion(0, 1.3, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
+  agregar(new Cilindro(0.2, 0.3, 100, true, true));
+}
+
+void Brazo::fijarAlpha(float alpha_nuevo) {
+  entradas.insert(entradas.begin(), MAT_Rotacion(alpha_nuevo, 0, 1, 0));
+}
+
+Matriz4f* Brazo::matrizBrazo() {
+  return leerPtrMatriz(indice_brazo);
 }
 
 // *********************************************************************
@@ -270,7 +279,81 @@ Cabeza::Cabeza() {
 BrazoMecanico::BrazoMecanico() {
   agregar(new Base);
   agregar(MAT_Traslacion(0, 0.1, 0));
-  agregar(new Brazo);
-  agregar(MAT_Traslacion(0, 4.2, 0));
+
+  unsigned indice_rotacion_brazo = agregar(MAT_Rotacion(10, 0, 1, 0));
+  agregar(new Cilindro(0.2, 0.5, 100, true, true));
+  agregar(MAT_Traslacion(0, 0.8, 0));
+  unsigned indice_rotacion_art1 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
+  agregar(new Cilindro(0.2, 1, 100, true, true));
+  agregar(MAT_Traslacion(0, 1.3, 0));
+  unsigned indice_rotacion_art2 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
+  agregar(new Cilindro(0.2, 1, 100, true, true));
+  agregar(MAT_Traslacion(0, 1.3, 0));
+  unsigned indice_rotacion_art3 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  agregar(new Articulacion(0));
+  agregar(MAT_Traslacion(0, 0.3, 0));
+  agregar(new Cilindro(0.2, 0.3, 100, true, true));
+
+  agregar(MAT_Traslacion(0, 0.3, 0));
+  unsigned indice_rotacion_cabeza = agregar(MAT_Rotacion(10, 0, 1, 0));
   agregar(new Cabeza);
+
+  Parametro rotacion_brazo(
+    "rotación del brazo",
+    leerPtrMatriz(indice_rotacion_brazo),
+    [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
+    true,
+    30,
+    180,
+    4
+  );
+  parametros.push_back(rotacion_brazo);
+
+  Parametro rotacion_art1(
+    "rotación del brazo",
+    leerPtrMatriz(indice_rotacion_art1),
+    [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
+    true,
+    60,
+    90,
+    8
+  );
+  parametros.push_back(rotacion_art1);
+
+  Parametro rotacion_art2(
+    "rotación del brazo",
+    leerPtrMatriz(indice_rotacion_art2),
+    [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
+    true,
+    30,
+    90,
+    8
+  );
+  parametros.push_back(rotacion_art2);
+
+  Parametro rotacion_art3(
+    "rotación del brazo",
+    leerPtrMatriz(indice_rotacion_art3),
+    [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
+    true,
+    15,
+    90,
+    8
+  );
+  parametros.push_back(rotacion_art3);
+
+  Parametro rotacion_cabeza(
+    "rotación de la cabeza",
+    leerPtrMatriz(indice_rotacion_cabeza),
+    [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
+    true,
+    30,
+    180,
+    12
+  );
+  parametros.push_back(rotacion_cabeza);
 }

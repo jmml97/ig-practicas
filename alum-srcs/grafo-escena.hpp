@@ -103,8 +103,6 @@ class NodoGrafoEscena : public Objeto3D {
 
 class NodoGrafoEscenaParam : public NodoGrafoEscena {
  protected:
-  // COMPLETAR: práctica 3: declarar vector de parámetros del nodo
-  // .......
   std::vector<Parametro> parametros;
 
  public:
@@ -131,24 +129,27 @@ class Base : public NodoGrafoEscena {
 // Articulaciones del Brazo del Brazo Mecánico
 
 class Articulacion : public NodoGrafoEscena {
-  public:
-   Articulacion();
-};
+ protected:
+  float alpha;
 
-// *********************************************************************
-// Articulaciones del Brazo del Brazo Mecánico
-
-class Articulaciones : public NodoGrafoEscena {
-  public:
-   Articulaciones();
+ public:
+  Articulacion();
+  Articulacion(float alpha_inicial);
+  void fijarAlpha(float alpha_nuevo);
 };
 
 // *********************************************************************
 // Brazo del Brazo Mecánico
 
 class Brazo : public NodoGrafoEscena {
-  public:
-   Brazo();
+ protected:
+  float alpha;
+  unsigned indice_brazo;
+
+ public:
+  Brazo(float alpha_inicial);
+  void fijarAlpha(float alpha_nuevo);
+  Matriz4f* matrizBrazo();
 };
 
 // *********************************************************************
@@ -170,9 +171,12 @@ class Cabeza : public NodoGrafoEscena {
 // *********************************************************************
 // Brazo Mecánico
 
-class BrazoMecanico : public NodoGrafoEscena {
+class BrazoMecanico : public NodoGrafoEscenaParam {
+  protected:
+  unsigned indice_brazo;
   public:
    BrazoMecanico();
+   Matriz4f* matrizBrazo();
 };
 
 #endif  // GRAFO_ESCENA_HPP
