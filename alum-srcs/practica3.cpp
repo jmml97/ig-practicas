@@ -111,5 +111,9 @@ bool P3_FGE_Desocupado()
    // actualizar el objeto activo, forzar redibujado, devolver true.
    // si las animaciones están desactivadas, devolver false.
    // ....
-
+   redibujar_ventana = true;
+   cout << "prueba" << endl;
+   objeto->siguienteCuadro();
+  cout << "pruebaaa" << endl;
+   return true;
 }
