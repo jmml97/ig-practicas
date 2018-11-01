@@ -158,6 +158,8 @@ class Brazo : public NodoGrafoEscena {
 class Pinza : public NodoGrafoEscena {
   public:
    Pinza();
+   unsigned indice_rotacion_pinza;
+   Matriz4f* matrizPinza();
 };
 
 // *********************************************************************
@@ -165,7 +167,11 @@ class Pinza : public NodoGrafoEscena {
 
 class Cabeza : public NodoGrafoEscena {
   public:
+  Pinza* pinza1;
+  Pinza* pinza2;
    Cabeza();
+   Matriz4f* matrizPinza(int i);
+   unsigned indice_pinza1, indice_pinza2;
 };
 
 // *********************************************************************

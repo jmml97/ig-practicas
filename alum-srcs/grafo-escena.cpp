@@ -258,8 +258,13 @@ Matriz4f* Brazo::matrizBrazo() {
 // Pinza de la Cabeza del Brazo Mecánico
 
 Pinza::Pinza() {
+  indice_rotacion_pinza = agregar(MAT_Rotacion(0, 0, 1, 0));
   agregar(MAT_Escalado(0.08, 0.6, 0.1));
   agregar(new Cilindro);
+}
+
+Matriz4f* Pinza::matrizPinza() {
+  return leerPtrMatriz(indice_rotacion_pinza);
 }
 
 // *********************************************************************
@@ -267,10 +272,20 @@ Pinza::Pinza() {
 
 Cabeza::Cabeza() {
   agregar(new Cilindro(0.5, 0.1, 20, true, true));
-  agregar(MAT_Traslacion(0.3, 0, 0));
-  agregar(new Pinza);
-  agregar(MAT_Traslacion(-0.6, 0, 0));
-  agregar(new Pinza);
+  indice_pinza1 = agregar(MAT_Traslacion(0.3, 0, 0));
+  pinza1 = new Pinza;
+  agregar(pinza1);
+  pinza2 = new Pinza;
+  indice_pinza2 = agregar(MAT_Traslacion(-0.6, 0, 0));
+  agregar(pinza2);
+}
+
+Matriz4f* Cabeza::matrizPinza(int i) {
+  if (i == 1) {
+    return pinza1->matrizPinza();
+  } else {
+    return pinza2->matrizPinza();
+  }
 }
 
 // *********************************************************************
@@ -280,36 +295,37 @@ BrazoMecanico::BrazoMecanico() {
   agregar(new Base);
   agregar(MAT_Traslacion(0, 0.1, 0));
 
-  unsigned indice_rotacion_brazo = agregar(MAT_Rotacion(10, 0, 1, 0));
+  unsigned indice_rotacion_brazo = agregar(MAT_Rotacion(0, 0, 1, 0));
   agregar(new Cilindro(0.2, 0.5, 100, true, true));
   agregar(MAT_Traslacion(0, 0.8, 0));
-  unsigned indice_rotacion_art1 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  unsigned indice_rotacion_art1 = agregar(MAT_Rotacion(0, 1, 0, 0));
   agregar(new Articulacion(0));
   agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 1, 100, true, true));
   agregar(MAT_Traslacion(0, 1.3, 0));
-  unsigned indice_rotacion_art2 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  unsigned indice_rotacion_art2 = agregar(MAT_Rotacion(0, 1, 0, 0));
   agregar(new Articulacion(0));
   agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 1, 100, true, true));
   agregar(MAT_Traslacion(0, 1.3, 0));
-  unsigned indice_rotacion_art3 = agregar(MAT_Rotacion(10, 1, 0, 0));
+  unsigned indice_rotacion_art3 = agregar(MAT_Rotacion(0, 1, 0, 0));
   agregar(new Articulacion(0));
   agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 0.3, 100, true, true));
 
   agregar(MAT_Traslacion(0, 0.3, 0));
-  unsigned indice_rotacion_cabeza = agregar(MAT_Rotacion(10, 0, 1, 0));
-  agregar(new Cabeza);
+  unsigned indice_rotacion_cabeza = agregar(MAT_Rotacion(0, 0, 1, 0));
+  auto cabeza = new Cabeza;
+  agregar(cabeza);
 
   Parametro rotacion_brazo(
     "rotación del brazo",
     leerPtrMatriz(indice_rotacion_brazo),
     [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
     true,
-    30,
-    180,
-    4
+    0,
+    360,
+    0.0005
   );
   parametros.push_back(rotacion_brazo);
 
@@ -318,9 +334,9 @@ BrazoMecanico::BrazoMecanico() {
     leerPtrMatriz(indice_rotacion_art1),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
-    60,
-    90,
-    8
+    0,   /* c: Valor inicial (central para grados acotados)       */
+    60,  /* s: Semiamplitud (si acotado) o factor de escala si no */
+    0.001    /* f: Si acotado, frecuencia                             */
   );
   parametros.push_back(rotacion_art1);
 
@@ -329,9 +345,9 @@ BrazoMecanico::BrazoMecanico() {
     leerPtrMatriz(indice_rotacion_art2),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
-    30,
-    90,
-    8
+    0,
+    45,
+    0.001
   );
   parametros.push_back(rotacion_art2);
 
@@ -340,9 +356,9 @@ BrazoMecanico::BrazoMecanico() {
     leerPtrMatriz(indice_rotacion_art3),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
-    15,
-    90,
-    8
+    0,
+    30,
+    0.001
   );
   parametros.push_back(rotacion_art3);
 
@@ -351,9 +367,31 @@ BrazoMecanico::BrazoMecanico() {
     leerPtrMatriz(indice_rotacion_cabeza),
     [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
     true,
-    30,
+    0,
     180,
-    12
+    0.001
   );
   parametros.push_back(rotacion_cabeza);
+
+  Parametro rotacion_pinza1(
+    "rotación de las pinzas",
+    cabeza->matrizPinza(1),
+    [=](float v) {return MAT_Rotacion(v, 0, 0, 1);},
+    true,
+    5,
+    -5,
+    0.01
+  );
+  parametros.push_back(rotacion_pinza1);
+  
+  Parametro rotacion_pinza2(
+    "rotación de las pinzas",
+    cabeza->matrizPinza(2),
+    [=](float v) {return MAT_Rotacion(v, 0, 0, 1);},
+    true,
+    -5,
+    5,
+    0.01
+  );
+  parametros.push_back(rotacion_pinza2);
 }
