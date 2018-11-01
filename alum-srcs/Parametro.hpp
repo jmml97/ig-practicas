@@ -32,8 +32,8 @@ class Parametro {
       velocidad;    /* Velocidad actual (se suma a valor_norm) */
 
   static constexpr float v0 = 1;
-  static constexpr float delta = 0.1;
-  static constexpr float a = 0.1;
+  static constexpr float delta = 1;
+  static constexpr float a = 1;
 
  public:
   // crear grado de libertad no acotado
