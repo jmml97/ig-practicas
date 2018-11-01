@@ -18,15 +18,14 @@ Parametro::Parametro(const std::string& p_descripcion, Matriz4f* p_ptr_mat,
       f(p_f)
 
 {
-  valor_norm = 0;
+  valor_norm = c;
   velocidad = v0; /* v0 = 1 */
 }
 // -----------------------------------------------------------------------------
 
 void Parametro::siguiente_cuadro() {
-  valor_norm += velocidad;
-  *ptr_mat = fun_calculo_matriz(valor_norm);
-  std::cout << "pruebaa" << std::endl;
+  valor_norm += velocidad;std::cout << "siguiente_cuadro" << std::endl;
+  *ptr_mat = fun_calculo_matriz(leer_valor_actual());
 }
 // -----------------------------------------------------------------------------
 
@@ -62,23 +61,21 @@ void Parametro::decelerar() {
 // -----------------------------------------------------------------------------
 
 float Parametro::leer_valor_actual() {
-  if (acotado)
-    return c + s * sin(f * 2 * M_PI * valor_norm);
-  else
+  if (acotado) {
+    return c + s * std::sin(f * 2.0 * M_PI * valor_norm);
+  } else {
     return c + s * valor_norm;
+  }
+    
 }
 
 // -----------------------------------------------------------------------------
 float Parametro::leer_velocidad_actual() {
-  // COMPLETAR: práctica 3: devuelve la velocidad actual
-  // ....
   return velocidad;
 }
 // -----------------------------------------------------------------------------
 
 std::string Parametro::leer_descripcion() {
-  // COMPLETAR: práctica 3: devuelve la descripción
-  // ....
   return descripcion;
 }
 // -----------------------------------------------------------------------------
