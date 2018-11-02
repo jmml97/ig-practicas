@@ -15,8 +15,8 @@
 
 using namespace std ;
 
-// COMPLETAR: práctica 3: declarar variables de la práctica 3 (static)
-// .................
+static unsigned grado_libertad_actual = 0;
+static bool animaciones_activadas = false;
 static BrazoMecanico *objeto;
 
 // ---------------------------------------------------------------------
@@ -24,13 +24,10 @@ static BrazoMecanico *objeto;
 // Se llama una vez al inicio, cuando ya se ha creado la ventana e
 // incializado OpenGL.
 
-void P3_Inicializar(  )
-{
-   cout << "Creando objetos de la práctica 3 .... " << flush ;
-   // COMPLETAR: práctica 3: inicialización de objetos de la práctica 3
-   // .................
-   objeto = new BrazoMecanico();
-   cout << "hecho." << endl << flush;
+void P3_Inicializar() {
+  cout << "Creando objetos de la práctica 3 .... " << flush;
+  objeto = new BrazoMecanico();
+  cout << "hecho." << endl << flush;
 }
 
 // ---------------------------------------------------------------------
@@ -42,53 +39,104 @@ void P3_Inicializar(  )
 //  - devuelve 'false' si la tecla no se usa en esta práctica (no ha
 //    cambiado nada)
 
-bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
-{
-   bool res = false  ; // valor devuelto (true si se ha procesado tecla)
+bool P3_FGE_PulsarTeclaCaracter(unsigned char tecla) {
+  bool res = false;  // valor devuelto (true si se ha procesado tecla)
 
-   switch ( toupper( tecla ) )
-   {
-      case 'O' :
-         // COMPLETAR: práctica 3: activar siguiente objeto de la práctica
-         //           (solo en el caso de que se incluyan varios objetos en la práctica)
-         // ....
+  switch (toupper(tecla)) {
+    case 'O':
+      // COMPLETAR: práctica 3: activar siguiente objeto de la práctica
+      //           (solo en el caso de que se incluyan varios objetos en la
+      //           práctica)
+      // ....
 
-         break ;
+      break;
 
-      case 'A' :
-         // COMPLETAR: práctica 3: activar o desactivar animaciones
-         // ....
+    case 'A':
+      // práctica 3: activar o desactivar animaciones
+      animaciones_activadas = !animaciones_activadas;
 
-         break ;
+      if (animaciones_activadas) {
+        FijarFuncDesocupado(FGE_Desocupado);
+      }
 
-      case 'G' :
-         // COMPLETAR: práctica 3: activar siguiente parámetro
-         // ....
+      res = true;
+      cout << "animaciones "
+           << (animaciones_activadas ? "activadas" : "desactivadas") << endl;
 
-         break ;
+      break;
 
-      case 'R' :
-         // COMPLETAR: práctica 3: reset de animaciones
-         // ....
+    case 'G':
 
-         break ;
+      // Activar el siguiente parámetro
 
-      case '>' :
-         // COMPLETAR: práctica 3: acelerar o incrementar parámetro
-         // ....
+      if (objeto != nullptr) {
+        grado_libertad_actual =
+            (grado_libertad_actual + 1) % objeto->numParametros();
 
-         break ;
+        cout
+            << "el grado de libertad activo es: "
+            << objeto->leerPtrParametro(grado_libertad_actual)->leer_descripcion()
+            << endl;
 
-      case '<' :
-         // COMPLETAR: práctica 3: decelerar o decrementar parámetro
-         // ....
+        res = true;
+      }
 
-         break ;
-      default :
-         break ;
+      break;
 
-   }
-   return res ;
+    case 'R':
+      // práctica 3: reset de animaciones
+      animaciones_activadas = false;
+
+      if (objeto != nullptr) {
+        for (size_t i = 0; i < objeto->numParametros(); i++) {
+          objeto->leerPtrParametro(i)->reset();
+        }
+      }
+
+      cout << "animaciones desactivadas y parámetros reiniciados" << endl;
+      res = true;
+
+      break;
+
+    case '>':
+      // práctica 3: acelerar o incrementar parámetro
+
+      if (objeto != nullptr) {
+        Parametro* parametro_actual =
+            objeto->leerPtrParametro(grado_libertad_actual);
+
+        if (animaciones_activadas) {
+          parametro_actual->acelerar();
+        } else {
+          parametro_actual->incrementar();
+        }
+
+        res = true;
+      }
+
+      break;
+
+    case '<':
+      // práctica 3: decelerar o decrementar parámetro
+
+      if (objeto != nullptr) {
+        Parametro* parametro_actual =
+            objeto->leerPtrParametro(grado_libertad_actual);
+
+        if (animaciones_activadas) {
+          parametro_actual->decelerar();
+        } else {
+          parametro_actual->decrementar();
+        }
+
+        res = true;
+      }
+
+      break;
+    default:
+      break;
+  }
+  return res;
 }
 
 // ---------------------------------------------------------------------
@@ -96,24 +144,22 @@ bool P3_FGE_PulsarTeclaCaracter( unsigned char tecla )
 // se debe de usar el modo de dibujo que hay en el parámetro 'cv'
 // (se accede con 'cv.modoVisu')
 
-void P3_DibujarObjetos( ContextoVis & cv )
-{
-   // COMPLETAR: práctica 3: visualizar el objeto de la práctica 3
-   // ....
-   objeto->visualizarGL(cv);
+void P3_DibujarObjetos(ContextoVis& cv) {
+  // práctica 3: visualizar el objeto de la práctica 3
+  objeto->visualizarGL(cv);
 }
 
 //--------------------------------------------------------------------------
 
-bool P3_FGE_Desocupado()
-{
-   // COMPLETAR: práctica 3: si las animaciones están activadas,
-   // actualizar el objeto activo, forzar redibujado, devolver true.
-   // si las animaciones están desactivadas, devolver false.
-   // ....
-   redibujar_ventana = true;
-   cout << "prueba" << endl;
-   objeto->siguienteCuadro();
-  cout << "pruebaaa" << endl;
-   return true;
+bool P3_FGE_Desocupado() {
+  // COMPLETAR: práctica 3: si las animaciones están activadas,
+  // actualizar el objeto activo, forzar redibujado, devolver true.
+  // si las animaciones están desactivadas, devolver false.
+
+  if (!animaciones_activadas) return false;
+
+  if (objeto != nullptr) objeto->siguienteCuadro();
+
+  redibujar_ventana = true;
+  return true;
 }
