@@ -36,7 +36,8 @@
 			"algorithm": "cpp",
 			"iostream": "cpp",
 			"iosfwd": "cpp",
-			"functional": "cpp"
+			"functional": "cpp",
+			"ostream": "cpp"
 		}
 	}
 }
