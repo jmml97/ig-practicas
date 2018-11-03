@@ -84,7 +84,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
 
   /* Para el resto de perfiles, rotamos el perfil y añadimos los vértices  */
   /* También unimos los vértices de perfiles consecutivos para crear caras */
-  for (size_t i = 1; i < nper; i++) {
+  for (size_t i = 0; i < nper; i++) {
     Matriz4f giro = MAT_Rotacion(i * angulo_giro, 0, 1, 0);
 
     for (size_t j = 0; j < nvp; j++) {
@@ -93,10 +93,15 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
 
     /* Unimos los vértices del perfil actual con los del perfil anterior */
     for (size_t j = 0; j < nvp - 1; j++) {
+      int k_1 = (i - 1) * nvp + j;
+      int k_2 = (i - 1) * nvp + j + 1;
+      int k_3 = i * nvp + j;
+      int k_4 = i * nvp + j + 1;
+
       tabla_caras.push_back(
-          Tupla3u((i - 1) * nvp + j, (i - 1) * nvp + j + 1, i * nvp + j + 1));
+          Tupla3u(k_1, k_2, k_4));
       tabla_caras.push_back(
-          Tupla3u((i - 1) * nvp + j, i * nvp + j, i * nvp + j + 1));
+          Tupla3u(k_1, k_3, k_4));
     }
   }
 
