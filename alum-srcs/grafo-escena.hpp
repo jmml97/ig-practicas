@@ -62,8 +62,6 @@ struct EntradaNGE {
 
 class NodoGrafoEscena : public Objeto3D {
  protected:
-  // COMPLETAR: práctica 3: definir variables y métodos privados del nodo
-  // .......
   std::vector<EntradaNGE> entradas;   /* Vector de entradas */
 
  public:
@@ -129,27 +127,8 @@ class Base : public NodoGrafoEscena {
 // Articulaciones del Brazo del Brazo Mecánico
 
 class Articulacion : public NodoGrafoEscena {
- protected:
-  float alpha;
-
  public:
   Articulacion();
-  Articulacion(float alpha_inicial);
-  void fijarAlpha(float alpha_nuevo);
-};
-
-// *********************************************************************
-// Brazo del Brazo Mecánico
-
-class Brazo : public NodoGrafoEscena {
- protected:
-  float alpha;
-  unsigned indice_brazo;
-
- public:
-  Brazo(float alpha_inicial);
-  void fijarAlpha(float alpha_nuevo);
-  Matriz4f* matrizBrazo();
 };
 
 // *********************************************************************
@@ -169,7 +148,7 @@ class Cabeza : public NodoGrafoEscena {
  public:
   Pinza* pinza1;
   Pinza* pinza2;
-  
+
   Cabeza();
   Matriz4f* matrizPinza(int i);
   unsigned indice_pinza1, indice_pinza2;
@@ -183,7 +162,6 @@ class BrazoMecanico : public NodoGrafoEscenaParam {
   unsigned indice_brazo;
   public:
    BrazoMecanico();
-   Matriz4f* matrizBrazo();
 };
 
 #endif  // GRAFO_ESCENA_HPP
