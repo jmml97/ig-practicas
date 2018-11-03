@@ -18,9 +18,10 @@ class MallaInd : public Objeto3D {
  protected:
   std::vector<Tupla3f> tabla_cord_vert;
   std::vector<Tupla3u> tabla_caras;
+  std::vector<Tupla3f> tabla_colores;
 
   // ID de los VBO de vertices y caras
-  GLuint id_VBO_vert, id_VBO_caras;
+  GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores;
 
   // calculo de las normales de esta malla
   void calcular_normales();
@@ -39,6 +40,8 @@ class MallaInd : public Objeto3D {
   MallaInd(const std::string& nombreIni);
   // visualizar el objeto con OpenGL
   virtual void visualizarGL(ContextoVis& cv);
+
+  void fijarColorNodo(const Tupla3f& color);
 };
 // ---------------------------------------------------------------------
 

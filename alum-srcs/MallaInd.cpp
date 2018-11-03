@@ -14,7 +14,7 @@
 
 GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid *puntero) {
   GLuint id_VBO;
-  
+
   /* void glGenBuffers(GLsizei n, GLuint * buffers)                         */
     /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
     /* los almacena en el array 'buffers'.                                    */
@@ -76,6 +76,12 @@ void MallaInd::inicializarVBOs() {
         crearVBO(GL_ELEMENT_ARRAY_BUFFER,
                  sizeof(unsigned) * 3 * tabla_caras.size(), tabla_caras.data());
   }
+
+  if (tabla_colores.size() > 0) {
+    id_VBO_colores =
+        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
+                 tabla_colores.data());
+  }
 }
 
 void MallaInd::visualizarDE_MI(ContextoVis& cv) {
@@ -84,6 +90,11 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* GL_VERTEX_ARRAY: Si está activada, el array de vértices está activado    */
   /* para la escritura y usado durante el renderizado.                        */
   glEnableClientState(GL_VERTEX_ARRAY);
+
+  if (tabla_colores.size() > 0) {
+    glColorPointer(3, GL_FLOAT, 0, tabla_colores.data());
+    glEnableClientState(GL_COLOR_ARRAY);
+  }
 
   /* void glVertexPointer(GLint size, GLenum type, GLsizei stride,            */
   /*                      const GLvoid* pointer)                              */
@@ -103,6 +114,7 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* void glEnableClientState(GLenum cap)                                     */
   /* Permite desactivar las funcionalidades 'cap' en el cliente.              */
   glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 }
 
 // ----------------------------------------------------------------------------
@@ -110,16 +122,26 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
   
   inicializarVBOs();
 
+  // Colores
+  if (tabla_colores.size() > 0) {
+    glBindBuffer(GL_ARRAY_BUFFER, id_VBO_colores);
+    glColorPointer(3, GL_FLOAT, 0, 0);
+    glEnableClientState(GL_COLOR_ARRAY);
+  }
+
+  // Vértices
   glBindBuffer(GL_ARRAY_BUFFER, id_VBO_vert);
   glVertexPointer(3, GL_FLOAT, 0, NULL);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glEnableClientState(GL_VERTEX_ARRAY);
 
+  // Caras
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_VBO_caras);
   glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT, NULL);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 }
 
 // -----------------------------------------------------------------------------
@@ -144,6 +166,14 @@ void MallaInd::visualizarGL(ContextoVis& cv) {
     visualizarDE_VBOs(cv);
   } else {
     visualizarDE_MI(cv);
+  }
+}
+
+void MallaInd::fijarColorNodo(const Tupla3f& color) {
+  tabla_colores.clear();
+
+  for (size_t i = 0; i < tabla_cord_vert.size(); i++) {
+    tabla_colores.push_back(color);
   }
 }
 // *****************************************************************************
