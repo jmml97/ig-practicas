@@ -72,13 +72,18 @@ EntradaNGE::~EntradaNGE() {
 // Nodo del grafo de escena: contiene una lista de entradas
 // *****************************************************************************
 
-// -----------------------------------------------------------------------------
-// Visualiza usando OpenGL
-
+// Llama de forma recursiva a las sucesivas funciones de visualización de 
+// los objetos hijos del padre, a la vez que va añadiendo las matrices de
+// transformación del grafo de escena
 void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
-  // COMPLETAR: práctica 3: recorrer las entradas y visualizar el nodo
-  // ........
-  glMatrixMode(GL_MODELVIEW); /* Operamos sobre la modelview */
+
+  /* void glMatrixMode(GLenum mode);                                  */
+  /* Especifica sobre qué matrices se deben realizar las operaciones  */
+  glMatrixMode(GL_MODELVIEW);
+
+  /* void glPushMatrix(void);                                             */
+  /* Hay una pila de matrices para cada MatrixMode. glPushMatrix() añade	*/
+  /* matriz a la pila duplicando la actual	                              */
   glPushMatrix();
 
   for (auto entrada : entradas) {
@@ -86,6 +91,8 @@ void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
       entrada.objeto->visualizarGL(cv);
     } else {
       glMatrixMode(GL_MODELVIEW);
+      /* void glMultMatrixf(	const GLfloat * m);        */
+      /* Multiplica la matriz actual por la especificada */
       glMultMatrixf(*(entrada.matriz));
     }
   }
@@ -95,14 +102,13 @@ void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
 // -----------------------------------------------------------------------------
 
 NodoGrafoEscena::NodoGrafoEscena() {
-  // COMPLETAR: práctica 3: inicializar un nodo vacío (sin entradas)
-  // ........
+  entradas = {};
 }
 // -----------------------------------------------------------------------------
 
+// Recorre los nodos hijos del grafo de escena y los cambia al color 
+// especificado
 void NodoGrafoEscena::fijarColorNodo(const Tupla3f& nuevo_color) {
-  // COMPLETAR: práctica 3: asignarle un color plano al nodo, distinto del padre
-  // ........
   for (auto entrada : entradas) {
     if(entrada.tipo == TipoEntNGE::objeto) {
       entrada.objeto->fijarColorNodo(nuevo_color);
@@ -110,42 +116,35 @@ void NodoGrafoEscena::fijarColorNodo(const Tupla3f& nuevo_color) {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Añadir una entrada (al final).
-// genérica
-
+// Añade una entrada al final del grafo de escena y devuelve el tamaño
+// actual del mismo
 unsigned NodoGrafoEscena::agregar(const EntradaNGE& entrada) {
-  // COMPLETAR: práctica 3: agregar la entrada al nodo, devolver índice de la
-  // entrada
-  // ........
   entradas.push_back(entrada);
   return entradas.size() - 1;
 }
+
 // -----------------------------------------------------------------------------
 // construir una entrada y añadirla (al final)
 // objeto (copia solo puntero)
-
 unsigned NodoGrafoEscena::agregar(Objeto3D* pObjeto) {
   return agregar(EntradaNGE(pObjeto));
 }
+
 // ---------------------------------------------------------------------
 // construir una entrada y añadirla (al final)
 // matriz (copia objeto)
-
 unsigned NodoGrafoEscena::agregar(const Matriz4f& pMatriz) {
   return agregar(EntradaNGE(pMatriz));
 }
+
 // ---------------------------------------------------------------------
 // material (copia solo puntero)
 unsigned NodoGrafoEscena::agregar(Material* pMaterial) {
   return agregar(EntradaNGE(pMaterial));
 }
 
-// devuelve el puntero a la matriz en la i-ésima entrada
+// Devuelve el puntero a la matriz en la i-ésima entrada
 Matriz4f* NodoGrafoEscena::leerPtrMatriz(unsigned indice) {
-  // COMPLETAR: práctica 3: devolver puntero la matriz en ese índice
-  //   (debe de dar error y abortar si no hay una matriz en esa entrada)
-  // ........
   Matriz4f* ptr;
   try {
     ptr = entradas[indice].matriz;
@@ -155,20 +154,20 @@ Matriz4f* NodoGrafoEscena::leerPtrMatriz(unsigned indice) {
 
   return ptr;
 }
+
 // -----------------------------------------------------------------------------
 // si 'centro_calculado' es 'false', recalcula el centro usando los centros
 // de los hijos (el punto medio de la caja englobante de los centros de hijos)
-
 void NodoGrafoEscena::calcularCentroOC() {
   // COMPLETAR: práctica 5: calcular y guardar el centro del nodo
   //    en coordenadas de objeto (hay que hacerlo recursivamente)
   //   (si el centro ya ha sido calculado, no volver a hacerlo)
   // ........
 }
+
 // -----------------------------------------------------------------------------
 // método para buscar un objeto con un identificador y devolver un puntero al
 // mismo
-
 bool NodoGrafoEscena::buscarObjeto(
     const int ident_busc,       // identificador a buscar
     const Matriz4f& mmodelado,  // matriz de modelado
@@ -208,6 +207,7 @@ void NodoGrafoEscenaParam::siguienteCuadro() {
 Base::Base() {
   agregar(MAT_Escalado(2, 0.1, 2));
   agregar(new Cilindro);
+  fijarColorNodo({0.537, 0.388, 0.184});
 }
 
 // *********************************************************************
@@ -260,11 +260,17 @@ Matriz4f* Cabeza::matrizPinza(int i) {
 // Brazo Mecánico
 
 BrazoMecanico::BrazoMecanico() {
-  agregar(new Base);
-  agregar(MAT_Traslacion(0, 0.1, 0));
 
+  // Añadimos la base del brazo
+  agregar(new Base);
+
+  // Añadimos el primer cilindro del brazo y la rotación de todo el brazo
+  agregar(MAT_Traslacion(0, 0.1, 0));
   unsigned indice_rotacion_brazo = agregar(MAT_Rotacion(0, 0, 1, 0));
   agregar(new Cilindro(0.2, 0.5, 100, true, true));
+
+  // Añadimos las esferas correspondientes a las articulaciones, junto
+  // a sus rotaciones
   agregar(MAT_Traslacion(0, 0.8, 0));
   unsigned indice_rotacion_art1 = agregar(MAT_Rotacion(0, 1, 0, 0));
   agregar(new Articulacion);
@@ -281,19 +287,22 @@ BrazoMecanico::BrazoMecanico() {
   agregar(MAT_Traslacion(0, 0.3, 0));
   agregar(new Cilindro(0.2, 0.3, 100, true, true));
 
+  // Añadimos la cabeza del brazo mecánico junto a la rotación del mismo
   agregar(MAT_Traslacion(0, 0.3, 0));
   unsigned indice_rotacion_cabeza = agregar(MAT_Rotacion(0, 0, 1, 0));
   auto cabeza = new Cabeza;
   agregar(cabeza);
 
+  // Creamos todos los parámetros de las rotaciones, empleando para ello
+  // los índices que hemos almacenado
   Parametro rotacion_brazo(
     "rotación del brazo",
     leerPtrMatriz(indice_rotacion_brazo),
     [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
     true,
-    0,
-    360,
-    0.0005
+    0,      /* c: Valor inicial (central para grados acotados)       */
+    360,    /* s: Semiamplitud (si acotado) o factor de escala si no */
+    0.0005	/* f: Si acotado, frecuencia                             */
   );
   parametros.push_back(rotacion_brazo);
 
@@ -302,9 +311,9 @@ BrazoMecanico::BrazoMecanico() {
     leerPtrMatriz(indice_rotacion_art1),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
-    0,   /* c: Valor inicial (central para grados acotados)       */
-    60,  /* s: Semiamplitud (si acotado) o factor de escala si no */
-    0.001    /* f: Si acotado, frecuencia                             */
+    0,
+    60,     
+    0.001   
   );
   parametros.push_back(rotacion_art1);
 
