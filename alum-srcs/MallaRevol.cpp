@@ -125,9 +125,9 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     /* Añadimos el vértice a la tabla y generamos las caras uniendo los */
     /* primeros vértices de cada perfil con él                          */
     tabla_cord_vert.push_back(centro_tapa_inferior);
-    for (size_t i = 0; i < nper; i++) {
+    for (size_t i = 0; i < nper - 1; i++) {
       tabla_caras.push_back(
-          Tupla3u(i * nvp, tabla_cord_vert.size() - 1, (i * nvp + nvp) % (tabla_cord_vert.size() - 1)));
+          Tupla3u(i * nvp, tabla_cord_vert.size() - 1, (i * nvp + nvp) % (tabla_cord_vert.size() - 2)));
     }
 
     /* Obtenemos el último vértice del perfil original */
@@ -139,14 +139,17 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     /* Añadimos el vértice a la tabla y generamos las caras uniendo los */
     /* primeros vértices de cada perfil con él                          */
     tabla_cord_vert.push_back(centro_tapa_superior);
-    for (size_t i = 0; i < nper; i++) {
+    for (size_t i = 0; i < nper - 1; i++) {
       tabla_caras.push_back(Tupla3u(i * nvp + nvp - 1,
                                     tabla_cord_vert.size() - 1,
                                     i * nvp + nvp + nvp - 1));
     }
 
     /* Última cara */
-    tabla_caras.push_back(Tupla3u(nper * nvp - 1, tabla_cord_vert.size() - 1, nvp - 1));
+    if (cerrar_malla) {
+      tabla_caras.push_back(Tupla3u(nper * nvp - 1, tabla_cord_vert.size() - 1, nvp - 1));
+    }
+    
   }
 }
 
