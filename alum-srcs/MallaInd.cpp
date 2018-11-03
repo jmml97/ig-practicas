@@ -12,18 +12,47 @@
 // *****************************************************************************
 // funciones auxiliares
 
+GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid *puntero) {
+  GLuint id_VBO;
+  
+  /* void glGenBuffers(GLsizei n, GLuint * buffers)                         */
+    /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
+    /* los almacena en el array 'buffers'.                                    */
+  glGenBuffers(1, &id_VBO);
+
+  /* void glBindBuffers(GLenum target*, GLuint buffer)                      */
+    /* Enlaza el buffer object llamado 'buffer' al punto de enlace 'target'.  */
+    /* Si es la primera vez que se enlaza el buffer con dicho nombre, se      */
+    /* crea un buffer object con ese nombre.                                  */
+  glBindBuffer(tipo, id_VBO);
+
+  /* glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data,       */
+    /*              GLenum usage)                                             */
+    /* Reserva 'size' bytes de memoria para el objeto enlazado con 'target'.  */
+    /* Si 'data' no es NULL, copia esa información a dicho espacio. 'usage'   */
+    /* se utiliza para indicar al programa cuál es el uso que se le va a dar  */
+    /* a los datos.                                                           */
+  glBufferData(tipo, tam, puntero, GL_STATIC_DRAW);
+
+  glBindBuffer(tipo, 0);
+
+  return id_VBO;
+}
+
 // *****************************************************************************
 // métodos de la clase MallaInd.
 
 MallaInd::MallaInd() {
   // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
   ponerNombre("malla indexada, anónima");
+  id_VBO_vert = id_VBO_caras = 0;
 }
 // -----------------------------------------------------------------------------
 
 MallaInd::MallaInd(const std::string& nombreIni) {
   // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
   ponerNombre(nombreIni);
+  id_VBO_vert = id_VBO_caras = 0;
 }
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
@@ -34,6 +63,20 @@ void MallaInd::calcular_normales() {
 }
 
 // -----------------------------------------------------------------------------
+
+void MallaInd::inicializarVBOs() {
+  if (id_VBO_vert == 0) {
+    id_VBO_vert =
+        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
+                 tabla_cord_vert.data());
+  }
+
+  if (id_VBO_caras == 0) {
+    id_VBO_caras =
+        crearVBO(GL_ELEMENT_ARRAY_BUFFER,
+                 sizeof(unsigned) * 3 * tabla_caras.size(), tabla_caras.data());
+  }
+}
 
 void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* void glEnableClientState(GLenum cap)                                     */
@@ -64,56 +107,19 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
 
 // ----------------------------------------------------------------------------
 void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
-  static GLuint id_buffer_vert, id_buffer_caras;
+  
+  inicializarVBOs();
 
-  /* Primero vamos a crear el buffer object para los vértices                 */
-  if (id_buffer_vert == 0) {
-    /* void glGenBuffers(GLsizei n, GLuint * buffers)                         */
-    /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
-    /* los almacena en el array 'buffers'.                                    */
-    glGenBuffers(1, &id_buffer_vert);
-
-    /* void glBindBuffers(GLenum target*, GLuint buffer)                      */
-    /* Enlaza el buffer object llamado 'buffer' al punto de enlace 'target'.  */
-    /* Si es la primera vez que se enlaza el buffer con dicho nombre, se      */
-    /* crea un buffer object con ese nombre.                                  */
-    glBindBuffer(GL_ARRAY_BUFFER, id_buffer_vert);
-
-    /* glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data,       */
-    /*              GLenum usage)                                             */
-    /* Reserva 'size' bytes de memoria para el objeto enlazado con 'target'.  */
-    /* Si 'data' no es NULL, copia esa información a dicho espacio. 'usage'   */
-    /* se utiliza para indicar al programa cuál es el uso que se le va a dar  */
-    /* a los datos.                                                           */
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
-                 tabla_cord_vert.data(), GL_STATIC_DRAW);
-  } else {
-    glBindBuffer(GL_ARRAY_BUFFER, id_buffer_vert);
-  }
-
-  /* Ahora vamos a crear el buffer object para las caras siguiendo el mismo   */
-  /* proceso.                                                                 */
-  if (id_buffer_caras == 0) {
-    glGenBuffers(1, &id_buffer_caras);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_buffer_caras);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned) * 3 * tabla_caras.size(), tabla_caras.data(),
-                 GL_STATIC_DRAW);
-  } else {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_buffer_caras);
-  }
-
+  glBindBuffer(GL_ARRAY_BUFFER, id_VBO_vert);
+  glVertexPointer(3, GL_FLOAT, 0, NULL);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
   glEnableClientState(GL_VERTEX_ARRAY);
 
-  /* El puntero relativo al VBO es NULL. */
-  glVertexPointer(3, GL_FLOAT, 0, NULL);
-  /* De nuevo, el puntero relativo al VBO es NULL. */
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_VBO_caras);
   glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT, NULL);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState(GL_VERTEX_ARRAY);
-  /* Deshacemos los enlaces a los buffer objects. */
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // -----------------------------------------------------------------------------

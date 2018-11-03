@@ -16,15 +16,17 @@
 
 class MallaInd : public Objeto3D {
  protected:
-  // COMPLETAR: incluir aquí las variables y métodos privados que sean
-  // necesarios para una malla indexada
-  // ......
   std::vector<Tupla3f> tabla_cord_vert;
   std::vector<Tupla3u> tabla_caras;
+
+  // ID de los VBO de vertices y caras
+  GLuint id_VBO_vert, id_VBO_caras;
 
   // calculo de las normales de esta malla
   void calcular_normales();
 
+  // Inicializar VBOs
+  void inicializarVBOs();
   // visualizar con 'draw elements', en modo inmediato
   void visualizarDE_MI(ContextoVis& cv);
   // visualizar con 'draw elements', en modo diferido (con VBOS)
