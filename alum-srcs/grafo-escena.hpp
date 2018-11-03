@@ -67,15 +67,20 @@ class NodoGrafoEscena : public Objeto3D {
  public:
   NodoGrafoEscena();
 
-  // visualiza usando OpenGL
+  // Llama de forma recursiva a las sucesivas funciones de visualización de 
+  // los objetos hijos del padre, a la vez que va añadiendo las matrices de
+  // transformación del grafo de escena
   virtual void visualizarGL(ContextoVis& cv);
+
+  // Recorre los nodos hijos del grafo de escena y los cambia al color 
+  // especificado
   void fijarColorNodo(const Tupla3f& nuevo_color);
 
   // calcular y obtener la caja englobante
   // virtual CajaEngf cajaEnglobante() ;
 
-  // añadir una entrada al final, hace copia de la entrada
-  // devuelve indice de la entrada dentro del vector de entradas
+  // Añade una entrada al final del grafo de escena y devuelve el índice
+  // de la entrada dentro del vector de entradas
   unsigned agregar(const EntradaNGE& entrada);
 
   // construir una entrada y añadirla (al final)
@@ -83,7 +88,7 @@ class NodoGrafoEscena : public Objeto3D {
   unsigned agregar(const Matriz4f& pMatriz);  // matriz (copia objeto)
   unsigned agregar(Material* pMaterial);      // material (copia solo puntero)
 
-  // devuelve el puntero a la matriz en la i-ésima entrada
+  // Devuelve el puntero a la matriz en la i-ésima entrada
   Matriz4f* leerPtrMatriz(unsigned iEnt);
 
   // método para buscar un objeto con un identificador
@@ -104,14 +109,14 @@ class NodoGrafoEscenaParam : public NodoGrafoEscena {
   std::vector<Parametro> parametros;
 
  public:
-  // devuelve el número de parámetros
+  // Devuelve el número de parámetros
   int numParametros();
 
-  // devuelve un puntero al i-ésimo parámetro (i < numParametros())
+  // Devuelve un puntero al i-ésimo parámetro (i < numParametros())
   Parametro* leerPtrParametro(unsigned i);
 
-  // actualiza el objeto para ir al siguiente cuadro,
-  // se usa cuando están activadas las animaciones, una vez antes de cada frame
+  // Actualiza el objeto para ir al siguiente cuadro. Se usa cuando están 
+  // activadas las animaciones, una vez antes de cada frame
   void siguienteCuadro();
 };
 
