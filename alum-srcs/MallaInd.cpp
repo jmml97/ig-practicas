@@ -10,28 +10,32 @@
 #include <tuplasg.hpp>
 
 // *****************************************************************************
-// funciones auxiliares
+// Funciones auxiliares
 
-GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid *puntero) {
+// Crea un VBO del tipo especificado enlazándole la matriz correspondiente
+// Los VBO (Vertex Buffer Object) son simplemente Buffer Object que almacenan
+// información de los vértices de una figura en la GPU. 
+GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid* puntero) {
   GLuint id_VBO;
 
   /* void glGenBuffers(GLsizei n, GLuint * buffers)                         */
-    /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
-    /* los almacena en el array 'buffers'.                                    */
+  /* Devuelve 'n' nombres no utilizados para identificar buffer objects y   */
+  /* los almacena en el array 'buffers'.                                    */
+  /* No genera ningún tipo de contenido en el VBO                           */
   glGenBuffers(1, &id_VBO);
 
   /* void glBindBuffers(GLenum target*, GLuint buffer)                      */
-    /* Enlaza el buffer object llamado 'buffer' al punto de enlace 'target'.  */
-    /* Si es la primera vez que se enlaza el buffer con dicho nombre, se      */
-    /* crea un buffer object con ese nombre.                                  */
+  /* Enlaza el buffer object llamado 'buffer' al punto de enlace 'target'.  */
+  /* Si es la primera vez que se enlaza el buffer con dicho nombre, se      */
+  /* crea un buffer object con ese nombre.                                  */
   glBindBuffer(tipo, id_VBO);
 
   /* glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data,       */
-    /*              GLenum usage)                                             */
-    /* Reserva 'size' bytes de memoria para el objeto enlazado con 'target'.  */
-    /* Si 'data' no es NULL, copia esa información a dicho espacio. 'usage'   */
-    /* se utiliza para indicar al programa cuál es el uso que se le va a dar  */
-    /* a los datos.                                                           */
+  /*              GLenum usage)                                             */
+  /* Reserva 'size' bytes de memoria para el objeto enlazado con 'target'.  */
+  /* Si 'data' no es NULL, copia esa información a dicho espacio. 'usage'   */
+  /* se utiliza para indicar al programa cuál es el uso que se le va a dar  */
+  /* a los datos.                                                           */
   glBufferData(tipo, tam, puntero, GL_STATIC_DRAW);
 
   glBindBuffer(tipo, 0);
@@ -40,13 +44,9 @@ GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid *puntero) {
 }
 
 // *****************************************************************************
-// métodos de la clase MallaInd.
+// Métodos de la clase MallaInd.
 
-MallaInd::MallaInd() {
-  // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
-  ponerNombre("malla indexada, anónima");
-  id_VBO_vert = id_VBO_caras = 0;
-}
+MallaInd::MallaInd() : MallaInd("malla indexada, anónima") {}
 // -----------------------------------------------------------------------------
 
 MallaInd::MallaInd(const std::string& nombreIni) {
@@ -64,6 +64,7 @@ void MallaInd::calcular_normales() {
 
 // -----------------------------------------------------------------------------
 
+// Crea los VBOs correspondientes para los vértices, caras y colores
 void MallaInd::inicializarVBOs() {
   if (id_VBO_vert == 0) {
     id_VBO_vert =
@@ -118,19 +119,39 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
 }
 
 // ----------------------------------------------------------------------------
+
+// Función de visualización cuando se usan VBOs
 void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
-  
   inicializarVBOs();
 
-  // Colores
+  // Colores (puede que el objeto no esté coloreado)
   if (tabla_colores.size() > 0) {
+    /* void glBindBuffer(	GLenum  	target,                             */
+    /*                    GLuint  	buffer);                            */
+    /* Para poder modificar un objeto de OpenGL es necesario que esté   */
+    /* asociado a un contexto, que especifica el comportamiento de este */
+    /* objeto                                                           */
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO_colores);
+
+    /* void glColorPointer(GLint  	size,                               */
+ 	  /*                     GLenum  	type,                               */
+ 	  /*                     GLsizei  	stride,                           */
+ 	  /*                     const GLvoid *  	pointer);                   */
+    /* Especifica la ubicación el formato de los datos de un array de   */
+    /* componentes de color a usar durante el renderizado	              */
     glColorPointer(3, GL_FLOAT, 0, 0);
     glEnableClientState(GL_COLOR_ARRAY);
   }
 
   // Vértices
   glBindBuffer(GL_ARRAY_BUFFER, id_VBO_vert);
+
+  /* void glVertexPointer(GLint  	size,                               */
+ 	/*                      GLenum  	type,º	                          */
+ 	/*                      GLsizei  	stride,                           */
+ 	/*                      const GLvoid *  	pointer);                 */
+  /* Especifica la ubicación el formato de los datos de un array de   */
+  /* coordinadas de vértices a usar durante el renderizado	          */ 
   glVertexPointer(3, GL_FLOAT, 0, NULL);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -161,7 +182,7 @@ void MallaInd::visualizarGL(ContextoVis& cv) {
       break;
   }
 
-  /* Seleccionamos la función a utilizar según vayamos a usar VBOs o no. */
+  // Seleccionamos la función a utilizar según vayamos a usar VBOs o no.
   if (cv.usarVBOs) {
     visualizarDE_VBOs(cv);
   } else {
@@ -181,7 +202,7 @@ void MallaInd::fijarColorNodo(const Tupla3f& color) {
 // *****************************************************************************
 
 Cubo::Cubo() : MallaInd("malla cubo") {
-  tabla_cord_vert = {{0.0, 0.0, 0.0},  {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
+  tabla_cord_vert = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
                      {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0},
                      {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}};
   tabla_caras = {{0, 4, 5}, {0, 1, 5}, {1, 5, 6}, {1, 2, 6},
@@ -191,8 +212,8 @@ Cubo::Cubo() : MallaInd("malla cubo") {
 // *****************************************************************************
 
 Tetraedro::Tetraedro() : MallaInd("malla tetraedro") {
-  tabla_cord_vert = {{0.0, 0.0, 0.0},  {1.0, 0.0, 0.0}, {0.0, 0.0, 1.0},
-                     {0.0, 1.0, 1.0}};
+  tabla_cord_vert = {
+      {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0, 1.0}};
   tabla_caras = {{0, 1, 2}, {0, 1, 3}, {0, 2, 3}, {1, 2, 3}};
 }
 // *****************************************************************************
