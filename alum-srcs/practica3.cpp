@@ -149,13 +149,10 @@ void P3_DibujarObjetos(ContextoVis& cv) {
   objeto->visualizarGL(cv);
 }
 
-//--------------------------------------------------------------------------
-
+// Si las animaciones están activadas, actualizar el objeto 
+// activo, forzar redibujado, devolver true.
+// Si las animaciones están desactivadas, devolver false.
 bool P3_FGE_Desocupado() {
-  // COMPLETAR: práctica 3: si las animaciones están activadas,
-  // actualizar el objeto activo, forzar redibujado, devolver true.
-  // si las animaciones están desactivadas, devolver false.
-
   if (!animaciones_activadas) return false;
 
   if (objeto != nullptr) objeto->siguienteCuadro();
