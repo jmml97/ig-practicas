@@ -166,12 +166,13 @@ class Pinza : public NodoGrafoEscena {
 // Cabeza del Brazo Mecánico
 
 class Cabeza : public NodoGrafoEscena {
-  public:
+ public:
   Pinza* pinza1;
   Pinza* pinza2;
-   Cabeza();
-   Matriz4f* matrizPinza(int i);
-   unsigned indice_pinza1, indice_pinza2;
+  
+  Cabeza();
+  Matriz4f* matrizPinza(int i);
+  unsigned indice_pinza1, indice_pinza2;
 };
 
 // *********************************************************************
