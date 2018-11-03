@@ -91,6 +91,8 @@ bool Objeto3D::buscarObjeto
       return false ;
 }
 
+void Objeto3D::fijarColorNodo(const Tupla3f& color) {}
+
 // -----------------------------------------------------------------------------
 // destructor
 Objeto3D::~Objeto3D()
