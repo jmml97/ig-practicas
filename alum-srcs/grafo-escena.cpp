@@ -116,8 +116,8 @@ void NodoGrafoEscena::fijarColorNodo(const Tupla3f& nuevo_color) {
   }
 }
 
-// Añade una entrada al final del grafo de escena y devuelve el tamaño
-// actual del mismo
+// Añade una entrada al final del grafo de escena y devuelve el índice
+// de la entrada dentro del vector de entradas
 unsigned NodoGrafoEscena::agregar(const EntradaNGE& entrada) {
   entradas.push_back(entrada);
   return entradas.size() - 1;
@@ -214,7 +214,6 @@ Base::Base() {
 // Articulacion del Brazo del Brazo Mecánico
 
 Articulacion::Articulacion() {
-  agregar(MAT_Rotacion(0, 0, 0, 1));
   agregar(MAT_Escalado(0.4, 0.4, 0.4));
   agregar(new Esfera);
   fijarColorNodo({0.521, 0.521, 0.521});
@@ -224,7 +223,7 @@ Articulacion::Articulacion() {
 // Pinza de la Cabeza del Brazo Mecánico
 
 Pinza::Pinza() {
-  indice_rotacion_pinza = agregar(MAT_Rotacion(0, 0, 1, 0));
+  indice_rotacion_pinza = agregar(MAT_Rotacion(0, 0, 0, 1));
   agregar(MAT_Escalado(0.08, 0.6, 0.1));
   agregar(new Cilindro);
   fijarColorNodo({0.188, 0.188, 0.188});
@@ -240,11 +239,11 @@ Matriz4f* Pinza::matrizPinza() {
 Cabeza::Cabeza() {
   agregar(new Cilindro(0.5, 0.1, 20, true, true));
   fijarColorNodo({0.737, 0.219, 0.219});
-  indice_pinza1 = agregar(MAT_Traslacion(0.3, 0, 0));
+  agregar(MAT_Traslacion(0.3, 0.1, 0));
   pinza1 = new Pinza;
   agregar(pinza1);
   pinza2 = new Pinza;
-  indice_pinza2 = agregar(MAT_Traslacion(-0.6, 0, 0));
+  agregar(MAT_Traslacion(-0.6, 0, 0));
   agregar(pinza2);
 }
 
@@ -345,7 +344,7 @@ BrazoMecanico::BrazoMecanico() {
     [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
     true,
     0,
-    180,
+    360,
     0.001
   );
   parametros.push_back(rotacion_cabeza);
