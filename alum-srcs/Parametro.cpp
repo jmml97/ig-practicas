@@ -24,7 +24,7 @@ Parametro::Parametro(const std::string& p_descripcion, Matriz4f* p_ptr_mat,
 // -----------------------------------------------------------------------------
 
 void Parametro::siguiente_cuadro() {
-  valor_norm += velocidad;std::cout << "siguiente_cuadro" << std::endl;
+  valor_norm += velocidad;
   *ptr_mat = fun_calculo_matriz(leer_valor_actual());
 }
 // -----------------------------------------------------------------------------
