@@ -125,7 +125,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     /* Añadimos el vértice a la tabla y generamos las caras uniendo los */
     /* primeros vértices de cada perfil con él                          */
     tabla_cord_vert.push_back(centro_tapa_inferior);
-    for (size_t i = 0; i < nper - 1; i++) {
+    for (size_t i = 0; i < nper; i++) {
       tabla_caras.push_back(
           Tupla3u(i * nvp, tabla_cord_vert.size() - 1, (i * nvp + nvp) % (tabla_cord_vert.size() - 2)));
     }
