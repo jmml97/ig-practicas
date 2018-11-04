@@ -107,8 +107,10 @@ bool P3_FGE_PulsarTeclaCaracter(unsigned char tecla) {
 
         if (animaciones_activadas) {
           parametro_actual->acelerar();
+          cout << "parámetro acelerado" << endl;
         } else {
           parametro_actual->incrementar();
+          cout << "parámetro incrementado" << endl;
         }
 
         res = true;
@@ -125,8 +127,10 @@ bool P3_FGE_PulsarTeclaCaracter(unsigned char tecla) {
 
         if (animaciones_activadas) {
           parametro_actual->decelerar();
+          cout << "parámetro decelerado" << endl;
         } else {
           parametro_actual->decrementar();
+          cout << "parámetro decrementado" << endl;
         }
 
         res = true;
