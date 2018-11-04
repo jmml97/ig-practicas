@@ -306,7 +306,7 @@ BrazoMecanico::BrazoMecanico() {
   parametros.push_back(rotacion_brazo);
 
   Parametro rotacion_art1(
-    "rotación del brazo",
+    "rotación de articulación 1",
     leerPtrMatriz(indice_rotacion_art1),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
@@ -317,7 +317,7 @@ BrazoMecanico::BrazoMecanico() {
   parametros.push_back(rotacion_art1);
 
   Parametro rotacion_art2(
-    "rotación del brazo",
+    "rotación de articulación 2",
     leerPtrMatriz(indice_rotacion_art2),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
@@ -328,7 +328,7 @@ BrazoMecanico::BrazoMecanico() {
   parametros.push_back(rotacion_art2);
 
   Parametro rotacion_art3(
-    "rotación del brazo",
+    "rotación de articulación 3",
     leerPtrMatriz(indice_rotacion_art3),
     [=](float v) {return MAT_Rotacion(v, 1, 0, 0);},
     true,
