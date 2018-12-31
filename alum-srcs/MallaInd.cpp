@@ -86,8 +86,13 @@ void MallaInd::calcular_normales() {
       normales_caras.push_back(n);
 
       for (int j = 0; j < 2; j++) {
-        normales_vertices[caras[i](j)] =
-            (n + normales_vertices[caras[i](j)]).normalized();
+        normales_vertices[caras[i](j)] = (n + normales_vertices[caras[i](j)]);
+        if (normales_vertices[caras[i](j)](0) != 0 ||
+            normales_vertices[caras[i](j)](1) != 0 ||
+            normales_vertices[caras[i](j)](2) != 0) {
+          normales_vertices[caras[i](j)] =
+              (normales_vertices[caras[i](j)]).normalized();
+        }
       }
     }
   }
