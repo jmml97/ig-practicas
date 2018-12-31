@@ -16,12 +16,14 @@
 
 class MallaInd : public Objeto3D {
  protected:
-  std::vector<Tupla3f> tabla_cord_vert;
-  std::vector<Tupla3u> tabla_caras;
-  std::vector<Tupla3f> tabla_colores;
+  std::vector<Tupla3f> coordenadas_vertices;
+  std::vector<Tupla3u> caras;
+  std::vector<Tupla3f> colores;
 
-  std::vector<Tupla3f> tabla_normales_vert;
-  std::vector<Tupla3f> tabla_normales_caras;
+  std::vector<Tupla3f> normales_vertices;
+  std::vector<Tupla3f> normales_caras;
+
+  std::vector<Tupla3f> coordenadas_texturas;
 
   // ID de los VBO de vertices y caras
   GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores;

@@ -58,19 +58,19 @@ MallaInd::MallaInd(const std::string& nombreIni) {
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
 void MallaInd::calcular_normales() {
-  if (tabla_normales_caras.empty()) {
+  if (normales_caras.empty()) {
 
     // p, q, r := vértices de la cara
     // a := lado q - p
     // b := lado r - p 
     Tupla3f a, b, p, q, r, n;
-    tabla_normales_vert =
-        std::vector<Tupla3f>(tabla_cord_vert.size(), Tupla3f{0.0, 0.0, 0.0});
+    normales_vertices =
+        std::vector<Tupla3f>(coordenadas_vertices.size(), Tupla3f{0.0, 0.0, 0.0});
 
-    for (size_t i = 0; i < tabla_caras.size(); i++) {
-      p = tabla_cord_vert[tabla_caras[i](0)];
-      q = tabla_cord_vert[tabla_caras[i](1)];
-      r = tabla_cord_vert[tabla_caras[i](2)];
+    for (size_t i = 0; i < caras.size(); i++) {
+      p = coordenadas_vertices[caras[i](0)];
+      q = coordenadas_vertices[caras[i](1)];
+      r = coordenadas_vertices[caras[i](2)];
 
       a = q - p;
       b = r - p;
@@ -83,11 +83,11 @@ void MallaInd::calcular_normales() {
         n = n.normalized();
       }
 
-      tabla_normales_caras.push_back(n);
+      normales_caras.push_back(n);
 
       for (int j = 0; j < 2; j++) {
-        tabla_normales_vert[tabla_caras[i](j)] =
-            (n + tabla_normales_vert[tabla_caras[i](j)]).normalized();
+        normales_vertices[caras[i](j)] =
+            (n + normales_vertices[caras[i](j)]).normalized();
       }
     }
   }
@@ -99,20 +99,20 @@ void MallaInd::calcular_normales() {
 void MallaInd::inicializarVBOs() {
   if (id_VBO_vert == 0) {
     id_VBO_vert =
-        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
-                 tabla_cord_vert.data());
+        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * coordenadas_vertices.size() * 3,
+                 coordenadas_vertices.data());
   }
 
   if (id_VBO_caras == 0) {
     id_VBO_caras =
         crearVBO(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned) * 3 * tabla_caras.size(), tabla_caras.data());
+                 sizeof(unsigned) * 3 * caras.size(), caras.data());
   }
 
-  if (tabla_colores.size() > 0) {
+  if (colores.size() > 0) {
     id_VBO_colores =
-        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * tabla_cord_vert.size() * 3,
-                 tabla_colores.data());
+        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * coordenadas_vertices.size() * 3,
+                 colores.data());
   }
 }
 
@@ -123,8 +123,8 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* para la escritura y usado durante el renderizado.                        */
   glEnableClientState(GL_VERTEX_ARRAY);
 
-  if (tabla_colores.size() > 0) {
-    glColorPointer(3, GL_FLOAT, 0, tabla_colores.data());
+  if (colores.size() > 0) {
+    glColorPointer(3, GL_FLOAT, 0, colores.data());
     glEnableClientState(GL_COLOR_ARRAY);
   }
 
@@ -134,7 +134,7 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* coordenadas vértices a usar cuando se renderice. 'size' especifica el    */
   /* número de coordenadas por vértice, 'type', el tipo de cada coordenada, y */
   /* 'stride', el incremento de bytes en el array de un vértice a otro        */
-  glVertexPointer(3, GL_FLOAT, 0, tabla_cord_vert.data());
+  glVertexPointer(3, GL_FLOAT, 0, coordenadas_vertices.data());
 
   /* void glDrawArrays(GLenum mode, GLint first, GLsizei count)               */
   /* Construye una secuencia de primitivas geométricas utilizando elementos   */
@@ -147,8 +147,8 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
  	/*                     const GLvoid * indices);         */
   /* Renderiza primitivas a partir de datos de un array.  */
 
-  glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT,
-                 tabla_caras.data());
+  glDrawElements(GL_TRIANGLES, caras.size() * 3, GL_UNSIGNED_INT,
+                 caras.data());
 
   /* void glEnableClientState(GLenum cap)                                     */
   /* Permite desactivar las funcionalidades 'cap' en el cliente.              */
@@ -163,7 +163,7 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
   inicializarVBOs();
 
   // Colores (puede que el objeto no esté coloreado)
-  if (tabla_colores.size() > 0) {
+  if (colores.size() > 0) {
     /* void glBindBuffer(	GLenum  	target,                             */
     /*                    GLuint  	buffer);                            */
     /* Para poder modificar un objeto de OpenGL es necesario que esté   */
@@ -189,14 +189,14 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
  	/*                      GLsizei  	stride,                           */
  	/*                      const GLvoid *  	pointer);                 */
   /* Especifica la ubicación el formato de los datos de un array de   */
-  /* coordinadas de vértices a usar durante el renderizado	          */ 
+  /* coordenadas de vértices a usar durante el renderizado	          */ 
   glVertexPointer(3, GL_FLOAT, 0, NULL);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glEnableClientState(GL_VERTEX_ARRAY);
 
   // Caras
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_VBO_caras);
-  glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT, NULL);
+  glDrawElements(GL_TRIANGLES, caras.size() * 3, GL_UNSIGNED_INT, NULL);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glDisableClientState(GL_VERTEX_ARRAY);
@@ -229,10 +229,10 @@ void MallaInd::visualizarGL(ContextoVis& cv) {
 }
 
 void MallaInd::fijarColorNodo(const Tupla3f& color) {
-  tabla_colores.clear();
+  colores.clear();
 
-  for (size_t i = 0; i < tabla_cord_vert.size(); i++) {
-    tabla_colores.push_back(color);
+  for (size_t i = 0; i < coordenadas_vertices.size(); i++) {
+    colores.push_back(color);
   }
 }
 // *****************************************************************************
@@ -240,18 +240,18 @@ void MallaInd::fijarColorNodo(const Tupla3f& color) {
 // *****************************************************************************
 
 Cubo::Cubo() : MallaInd("malla cubo") {
-  tabla_cord_vert = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
+  coordenadas_vertices = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
                      {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0},
                      {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}};
-  tabla_caras = {{0, 4, 5}, {0, 1, 5}, {1, 5, 6}, {1, 2, 6},
+  caras = {{0, 4, 5}, {0, 1, 5}, {1, 5, 6}, {1, 2, 6},
                  {2, 6, 7}, {2, 3, 7}, {3, 7, 4}, {3, 0, 4},
                  {4, 5, 6}, {4, 7, 6}, {0, 1, 2}, {0, 5, 2}};
 }
 // *****************************************************************************
 
 Tetraedro::Tetraedro() : MallaInd("malla tetraedro") {
-  tabla_cord_vert = {
+  coordenadas_vertices = {
       {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0, 1.0}};
-  tabla_caras = {{0, 1, 2}, {0, 1, 3}, {0, 2, 3}, {1, 2, 3}};
+  caras = {{0, 1, 2}, {0, 1, 3}, {0, 2, 3}, {1, 2, 3}};
 }
 // *****************************************************************************

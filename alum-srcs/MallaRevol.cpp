@@ -79,7 +79,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
 
   /* Insertamos los vértices del perfil original */
   for (size_t i = 0; i < nvp; i++) {
-    tabla_cord_vert.push_back(perfil_original[i]);
+    coordenadas_vertices.push_back(perfil_original[i]);
   }
 
   /* Para el resto de perfiles, rotamos el perfil y añadimos los vértices  */
@@ -88,7 +88,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     Matriz4f giro = MAT_Rotacion(i * angulo_giro, 0, 1, 0);
 
     for (size_t j = 0; j < nvp; j++) {
-      tabla_cord_vert.push_back(giro * perfil_original[j]);
+      coordenadas_vertices.push_back(giro * perfil_original[j]);
     }
 
     /* Unimos los vértices del perfil actual con los del perfil anterior */
@@ -98,9 +98,9 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
       int k_3 = i * nvp + j;
       int k_4 = i * nvp + j + 1;
 
-      tabla_caras.push_back(
+      caras.push_back(
           Tupla3u(k_1, k_2, k_4));
-      tabla_caras.push_back(
+      caras.push_back(
           Tupla3u(k_1, k_3, k_4));
     }
   }
@@ -109,45 +109,45 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
   /* el perfil inicial                                                       */
   if (cerrar_malla) {
     for (size_t j = 0; j < nvp - 1; j++) {
-      tabla_caras.push_back(
+      caras.push_back(
           Tupla3u((nper - 1) * nvp + j, (nper - 1) * nvp + j + 1, j + 1));
-      tabla_caras.push_back(Tupla3u((nper - 1) * nvp + j, j, j + 1));
+      caras.push_back(Tupla3u((nper - 1) * nvp + j, j, j + 1));
     }
   }
 
   if (crear_tapas) {
     /* Obtenemos el primer vértice del perfil original */
-    Tupla3f primer_vertice = tabla_cord_vert[0];
+    Tupla3f primer_vertice = coordenadas_vertices[0];
 
     /* Centramos el vértice en el eje de giro */
     Tupla3f centro_tapa_inferior = Tupla3f(0, primer_vertice[1], 0);
 
     /* Añadimos el vértice a la tabla y generamos las caras uniendo los */
     /* primeros vértices de cada perfil con él                          */
-    tabla_cord_vert.push_back(centro_tapa_inferior);
+    coordenadas_vertices.push_back(centro_tapa_inferior);
     for (size_t i = 0; i < nper; i++) {
-      tabla_caras.push_back(
-          Tupla3u(i * nvp, tabla_cord_vert.size() - 1, (i * nvp + nvp) % (tabla_cord_vert.size() - 2)));
+      caras.push_back(
+          Tupla3u(i * nvp, coordenadas_vertices.size() - 1, (i * nvp + nvp) % (coordenadas_vertices.size() - 2)));
     }
 
     /* Obtenemos el último vértice del perfil original */
-    Tupla3f ultimo_vertice = tabla_cord_vert[tabla_cord_vert.size() - 2];
+    Tupla3f ultimo_vertice = coordenadas_vertices[coordenadas_vertices.size() - 2];
 
     /* Centramos el vértice en el eje de giro */
     Tupla3f centro_tapa_superior = Tupla3f(0, ultimo_vertice[1], 0);
 
     /* Añadimos el vértice a la tabla y generamos las caras uniendo los */
     /* primeros vértices de cada perfil con él                          */
-    tabla_cord_vert.push_back(centro_tapa_superior);
+    coordenadas_vertices.push_back(centro_tapa_superior);
     for (size_t i = 0; i < nper - 1; i++) {
-      tabla_caras.push_back(Tupla3u(i * nvp + nvp - 1,
-                                    tabla_cord_vert.size() - 1,
+      caras.push_back(Tupla3u(i * nvp + nvp - 1,
+                                    coordenadas_vertices.size() - 1,
                                     i * nvp + nvp + nvp - 1));
     }
 
     /* Última cara */
     if (cerrar_malla) {
-      tabla_caras.push_back(Tupla3u(nper * nvp - 1, tabla_cord_vert.size() - 1, nvp - 1));
+      caras.push_back(Tupla3u(nper * nvp - 1, coordenadas_vertices.size() - 1, nvp - 1));
     }
     
   }
