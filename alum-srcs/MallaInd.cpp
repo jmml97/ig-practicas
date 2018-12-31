@@ -109,6 +109,13 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* Construye una secuencia de primitivas geométricas utilizando elementos   */
   /* de array, empezando en 'first' y terminando en 'count' + 1. 'mode'       */
   /* especifica qué tipo de primitivas se van a usar.                         */
+
+  /* void glDrawElements(GLenum mode,                     */
+ 	/*                     GLsizei count,                   */
+ 	/*                     GLenum type,                     */
+ 	/*                     const GLvoid * indices);         */
+  /* Renderiza primitivas a partir de datos de un array.  */
+
   glDrawElements(GL_TRIANGLES, tabla_caras.size() * 3, GL_UNSIGNED_INT,
                  tabla_caras.data());
 
