@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "srcs"
+		},
+		{
+			"path": "bin"
 		}
 	],
 	"settings": {
