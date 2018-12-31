@@ -99,7 +99,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
       int k_4 = i * nvp + j + 1;
 
       caras.push_back(
-          Tupla3u(k_1, k_2, k_4));
+          Tupla3u(k_4, k_2, k_1));
       caras.push_back(
           Tupla3u(k_1, k_3, k_4));
     }
@@ -110,7 +110,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
   if (cerrar_malla) {
     for (size_t j = 0; j < nvp - 1; j++) {
       caras.push_back(
-          Tupla3u((nper - 1) * nvp + j, (nper - 1) * nvp + j + 1, j + 1));
+          Tupla3u(j + 1, (nper - 1) * nvp + j + 1, (nper - 1) * nvp + j));
       caras.push_back(Tupla3u((nper - 1) * nvp + j, j, j + 1));
     }
   }
@@ -140,16 +140,16 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
     /* primeros vértices de cada perfil con él                          */
     coordenadas_vertices.push_back(centro_tapa_superior);
     for (size_t i = 0; i < nper - 1; i++) {
-      caras.push_back(Tupla3u(i * nvp + nvp - 1,
-                                    coordenadas_vertices.size() - 1,
-                                    i * nvp + nvp + nvp - 1));
+      caras.push_back(Tupla3u(i * nvp + nvp + nvp - 1,
+                              coordenadas_vertices.size() - 1,
+                              i * nvp + nvp - 1));
     }
 
     /* Última cara */
     if (cerrar_malla) {
-      caras.push_back(Tupla3u(nper * nvp - 1, coordenadas_vertices.size() - 1, nvp - 1));
+      caras.push_back(
+          Tupla3u(nvp - 1, coordenadas_vertices.size() - 1, nper * nvp - 1));
     }
-    
   }
 }
 
