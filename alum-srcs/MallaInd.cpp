@@ -54,12 +54,43 @@ MallaInd::MallaInd(const std::string& nombreIni) {
   ponerNombre(nombreIni);
   id_VBO_vert = id_VBO_caras = 0;
 }
+
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
-
 void MallaInd::calcular_normales() {
-  // COMPLETAR: en la práctica 2: calculo de las normales de la malla
-  // .......
+  if (tabla_normales_caras.empty()) {
+
+    // p, q, r := vértices de la cara
+    // a := lado q - p
+    // b := lado r - p 
+    Tupla3f a, b, p, q, r, n;
+    tabla_normales_vert =
+        std::vector<Tupla3f>(tabla_cord_vert.size(), Tupla3f{0.0, 0.0, 0.0});
+
+    for (size_t i = 0; i < tabla_caras.size(); i++) {
+      p = tabla_cord_vert[tabla_caras[i](0)];
+      q = tabla_cord_vert[tabla_caras[i](1)];
+      r = tabla_cord_vert[tabla_caras[i](2)];
+
+      a = q - p;
+      b = r - p;
+
+      // n es el vector perpendicular a los vectores a y b obtenido mediante el 
+      // producto vectorial
+      n = a.cross(b);
+
+      if (n(0) != 0 || n(1) != 0 || n(2) != 0) {
+        n = n.normalized();
+      }
+
+      tabla_normales_caras.push_back(n);
+
+      for (int j = 0; j < 2; j++) {
+        tabla_normales_vert[tabla_caras[i](j)] =
+            (n + tabla_normales_vert[tabla_caras[i](j)]).normalized();
+      }
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

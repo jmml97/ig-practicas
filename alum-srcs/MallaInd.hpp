@@ -20,6 +20,9 @@ class MallaInd : public Objeto3D {
   std::vector<Tupla3u> tabla_caras;
   std::vector<Tupla3f> tabla_colores;
 
+  std::vector<Tupla3f> tabla_normales_vert;
+  std::vector<Tupla3f> tabla_normales_caras;
+
   // ID de los VBO de vertices y caras
   GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores;
 
