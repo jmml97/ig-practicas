@@ -22,7 +22,8 @@ MallaRevol::MallaRevol(const string& nombre) : MallaInd(nombre) {}
 /** correspondiente, actualizando las variables nvp y nper                **/
 /***************************************************************************/
 MallaRevol::MallaRevol(const std::string& nombre_arch, const unsigned nperfiles,
-                       const bool crear_tapas, const bool cerrar_malla) {
+                       const bool crear_tapas, const bool cerrar_malla,
+                       const bool crear_texturas) {
   ponerNombre(
       std::string("malla por revolución del perfil en '" + nombre_arch + "'"));
 
@@ -50,6 +51,10 @@ MallaRevol::MallaRevol(const std::string& nombre_arch, const unsigned nperfiles,
 
   // calcular la tabla de normales
   calcular_normales();
+
+  if (crear_texturas) {
+    definirCoordenadasTexturas();
+  }
 }
 
 /** MallaRevol::definirMallaRevol() *******************************************/
@@ -60,11 +65,16 @@ void MallaRevol::definirMallaRevol(std::vector<Tupla3f> perfil_original,
                                    const unsigned num_per,
                                    const unsigned num_vert_per,
                                    const bool crear_tapas,
-                                   const bool cerrar_malla) {
+                                   const bool cerrar_malla,
+                                   const bool crear_texturas = false) {
   nvp = num_vert_per;
   nper = num_per;
 
   generarMallaRevol(perfil_original, crear_tapas, cerrar_malla);
+
+  if (crear_texturas) {
+    definirCoordenadasTexturas();
+  }
 }
 
 /** MallaRevol::generarMallaRevol() *******************************************/
@@ -153,10 +163,10 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
   }
 }
 
-/** MallaRevol::generar_texturas() ********************************************/
+/** MallaRevol::definirCoordenadasTexturas() *****************************************/
 /** Genera las coordenadas de las texturas de la malla de revolución         **/
 /******************************************************************************/
-void MallaRevol::generar_texturas() {
+void MallaRevol::definirCoordenadasTexturas() {
   vector<float> distancia;
   distancia.push_back(0.0);
 
