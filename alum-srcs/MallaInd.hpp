@@ -23,7 +23,7 @@ class MallaInd : public Objeto3D {
   std::vector<Tupla3f> normales_vertices;
   std::vector<Tupla3f> normales_caras;
 
-  std::vector<Tupla3f> coordenadas_texturas;
+  std::vector<Tupla2f> coordenadas_texturas;
 
   // ID de los VBO de vertices y caras
   GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores;

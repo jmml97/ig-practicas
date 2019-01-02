@@ -30,6 +30,7 @@ class MallaRevol : public MallaInd {
                          const bool crear_tapas, const bool cerrar_malla);
   void generarMallaRevol(std::vector<Tupla3f> perfil_original,
                          const bool crear_tapas, const bool cerrar_malla);
+  void generar_texturas();
 };
 
 #endif

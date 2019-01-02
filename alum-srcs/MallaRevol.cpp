@@ -153,6 +153,35 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
   }
 }
 
+/** MallaRevol::generar_texturas() ********************************************/
+/** Genera las coordenadas de las texturas de la malla de revolución         **/
+/******************************************************************************/
+void MallaRevol::generar_texturas() {
+  vector<float> distancia;
+  distancia.push_back(0.0);
+
+  // Necesitamos calcular primero las medidas a lo largo del perfil entre
+  // el primer vértice y el j-ésimo
+  for (unsigned j = 0; j < nvp - 1; j++) {
+    Tupla3f siguiente = coordenadas_vertices[j + 1];
+    Tupla3f actual = coordenadas_vertices[j];
+    float nueva_distancia =
+        distancia[j] + sqrt((siguiente - actual).lengthSq());
+    distancia.push_back(nueva_distancia);
+  }
+
+  // Ahora podemos calcular las coordenadas de la textura
+  // X: sj = i/(N - 1); N número de vértices del perfil
+  // Y: tj = dj/d(j+1)
+  for (unsigned i = 0; i < nper; i++) {
+    for (unsigned j = 0; j < nvp; j++) {
+      float sj = i / (nper - 1);
+      float tj = distancia[j] / distancia[nvp - 1];
+      coordenadas_texturas.push_back(Tupla2f{sj, tj});
+    }
+  }
+}
+
 // *****************************************************************************
 
 /** Cilindro::Cilindro() ******************************************************/
