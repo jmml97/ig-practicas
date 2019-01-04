@@ -47,11 +47,14 @@ GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid* puntero) {
 // Métodos de la clase MallaInd.
 
 MallaInd::MallaInd() : MallaInd("malla indexada, anónima") {}
+
 // -----------------------------------------------------------------------------
 
 MallaInd::MallaInd(const std::string& nombreIni) {
   // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
   ponerNombre(nombreIni);
+
+  usar_texturas = false;
 
   id_VBO_vert = id_VBO_caras = id_VBO_colores = id_VBO_normales =
       id_VBO_texturas = 0;
@@ -133,6 +136,8 @@ void MallaInd::inicializarVBOs() {
   }
 }
 
+// -----------------------------------------------------------------------------
+
 void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* void glEnableClientState(GLenum cap)                                     */
   /* Permite activar las funcionalidades 'cap' en el cliente.                 */
@@ -141,12 +146,12 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   glEnableClientState(GL_VERTEX_ARRAY);
 
   if (usar_texturas) {
-    glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
     glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
 
     if (coordenadas_texturas.size() > 0) {
-      glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
     }
   } else if (colores.size() > 0) {
     glColorPointer(3, GL_FLOAT, 0, colores.data());
@@ -189,6 +194,11 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
   inicializarVBOs();
 
   if (usar_texturas) {
+    /* void glBindBuffer(	GLenum  	target, */
+    /*                    GLuint  	buffer);                            */
+    /* Para poder modificar un objeto de OpenGL es necesario que esté   */
+    /* asociado a un contexto, que especifica el comportamiento de este */
+    /* objeto                                                           */
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO_normales);
     glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -200,12 +210,6 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
     }
   } else if (colores.size() > 0) {  // Colores (puede que el objeto no esté
                                     // coloreado)
-
-    /* void glBindBuffer(	GLenum  	target, */
-    /*                    GLuint  	buffer);                            */
-    /* Para poder modificar un objeto de OpenGL es necesario que esté   */
-    /* asociado a un contexto, que especifica el comportamiento de este */
-    /* objeto                                                           */
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO_colores);
 
     /* void glColorPointer(GLint  	size,                               */
@@ -259,6 +263,8 @@ void MallaInd::visualizarDE_MISombreadoPlano(ContextoVis& cv) {
 
   glEnd();
 }
+
+// -----------------------------------------------------------------------------
 
 void MallaInd::visualizarGL(ContextoVis& cv) {
   usar_texturas =
