@@ -168,15 +168,12 @@ class Material {
 };
 
 //**********************************************************************
-// Clase FuenteLuz
+// Class: FuenteLuz
 // ---------------
-// clase que contiene los atributo de una fuente de luz OpenGL
-
+// Una clase que contiene los atributo de una fuente de luz OpenGL
 class FuenteLuz {
  public:
   // inicializa la fuente de luz
-  // p_longi_ini == valor inicial del ángulo horizontal en grados
-  // p_lati_ini  == idem del ángulo vértical
   // p_color     == color de la fuente de luz (amb, dif y spec )
   FuenteLuz(const VectorRGB& p_color);
   virtual ~FuenteLuz() = 0;
@@ -184,16 +181,15 @@ class FuenteLuz {
   // cambia el estado de OpenGL de forma que a partir de la llamada
   // se usará esta fuente de luz en los calculos del MIL
   // (en cada momento puede haber varias fuentes activadas)
-  void preActivar();
   virtual void activar() = 0;
 
  protected:
   VectorRGB color_ambiente,  // color de la fuente para la componente ambiental
       color_difuso,          // color de la fuente para la componente difusa
       color_especular;       // color de la fuente para la componente especular
-  GLenum indice_fuente;  // indice de la fuente de luz en el vector, se asigna al
-                      // insertarlo
-
+  GLenum indice_fuente;  // indice de la fuente de luz en el vector, se asigna
+                         // al insertarlo
+  void preActivar();
   friend class ColFuentesLuz;
 };
 
@@ -221,6 +217,9 @@ class FuentePosicional : public FuenteLuz {
   Tupla3f posicion;
 
  public:
+  // inicializa la fuente de luz
+  // p_posicion == posición inicial de la fuente de luz
+  // p_color == color de la fuente de luz (amb, dif y spec)
   FuentePosicional(const Tupla3f& p_posicion, const VectorRGB& p_color);
   virtual void activar();
 };

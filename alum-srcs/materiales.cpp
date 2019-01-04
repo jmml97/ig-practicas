@@ -19,57 +19,49 @@
 // **
 // *********************************************************************
 
-
-#include "matrices-tr.hpp"
 #include "materiales.hpp"
+#include "matrices-tr.hpp"
 
-using namespace std ;
+using namespace std;
 
-const bool trazam = false ;
+const bool trazam = false;
 
 //*********************************************************************
 
-PilaMateriales::PilaMateriales()
-{
-   actual = nullptr ;
-}
+PilaMateriales::PilaMateriales() { actual = nullptr; }
 // -----------------------------------------------------------------------------
 
-void PilaMateriales::activarMaterial( Material * material )
-{
-   if ( material != actual )
-   {
-      actual = material ;
-      if ( actual != nullptr )
-         actual->activar();
-   }
+void PilaMateriales::activarMaterial(Material* material) {
+  if (material != actual) {
+    actual = material;
+    if (actual != nullptr) actual->activar();
+  }
 }
+
 // -----------------------------------------------------------------------------
 
-void PilaMateriales::activarActual()
-{
-   if ( actual != nullptr )
-      actual->activar() ;
+void PilaMateriales::activarActual() {
+  if (actual != nullptr) actual->activar();
 }
+
 // -----------------------------------------------------------------------------
 
-void PilaMateriales::push(  )
-{
-   pila.push_back( actual );
-}
+void PilaMateriales::push() { pila.push_back(actual); }
+
 // -----------------------------------------------------------------------------
 
-void PilaMateriales::pop(  )
-{
-   if ( pila.size() == 0 )
-   {
-      cout << "error: intento de hacer 'pop' de un material en una pila de materiales vacía." << endl << flush ;
-      exit(1);
-   }
+void PilaMateriales::pop() {
+  if (pila.size() == 0) {
+    cout << "error: intento de hacer 'pop' de un material en una pila de "
+            "materiales vacía."
+         << endl
+         << flush;
+    exit(1);
+  }
 
-   Material * anterior = pila[pila.size()-1] ;
-   pila.pop_back();
-   activarMaterial( anterior );  // cambia 'actual'
+  Material* anterior = pila[pila.size() - 1];
+  pila.pop_back();
+  activarMaterial(anterior);  // cambia 'actual'
 }
 
 //**********************************************************************
@@ -77,12 +69,9 @@ void PilaMateriales::pop(  )
 Textura::Textura(const std::string& nombreArchivoJPG) {
   enviada = false;
   glGenTextures(1, &ident_textura);
-  modo_gen_ct =
-      mgct_desactivada;  // desactivamos las coordenadas automáticas
+  modo_gen_ct = mgct_desactivada;  // desactivamos las coordenadas automáticas
   imagen = new jpg::Imagen(nombreArchivoJPG);
 }
-
-// ---------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 
@@ -95,15 +84,13 @@ void Textura::enviar() {
 
 //----------------------------------------------------------------------
 
-Textura::~Textura( )
-{
-   using namespace std ;
-   cout << "destruyendo textura...imagen ==" << imagen << endl ;
-   if ( imagen != NULL )
-      delete imagen ;
+Textura::~Textura() {
+  using namespace std;
+  cout << "destruyendo textura...imagen ==" << imagen << endl;
+  if (imagen != NULL) delete imagen;
 
-   imagen = NULL ;
-   cout << "hecho (no hecho!)" << endl << flush ;
+  imagen = NULL;
+  cout << "hecho (no hecho!)" << endl << flush;
 }
 
 //----------------------------------------------------------------------
@@ -141,6 +128,7 @@ void Textura::activar() {
     }
   }
 }
+
 // *********************************************************************
 
 TexturaXY::TexturaXY(const std::string& nom) : Textura(nom) {
@@ -156,12 +144,12 @@ TexturaXY::TexturaXY(const std::string& nom) : Textura(nom) {
 
 // *********************************************************************
 
-Material::Material()
-{
-   iluminacion = false ;
-   tex = NULL ;
-   coloresCero() ;
+Material::Material() {
+  iluminacion = false;
+  tex = NULL;
+  coloresCero();
 }
+
 // ---------------------------------------------------------------------
 
 Material::Material(const std::string& nombreArchivoJPG) {
@@ -182,12 +170,11 @@ Material::Material(const std::string& nombreArchivoJPG) {
 }
 
 // ---------------------------------------------------------------------
+
 // crea un material usando textura y coeficientes: ka,kd,ks y exponente
 // (la textura puede ser NULL, la ilum. queda activada)
-
 Material::Material(Textura* text, float ka, float kd, float ks, float exp)
     : Material() {
-
   iluminacion = true;
   tex = text;
 
@@ -201,6 +188,7 @@ Material::Material(Textura* text, float ka, float kd, float ks, float exp)
 }
 
 // ---------------------------------------------------------------------
+
 // crea un material con un color único para las componentes ambiental y difusa
 // en el lugar de textura (textura == NULL)
 Material::Material(const Tupla3f& colorAmbDif, float ka, float kd, float ks,
@@ -217,7 +205,8 @@ Material::Material(const Tupla3f& colorAmbDif, float ka, float kd, float ks,
 
   ponerNombre("material color plano con iluminación");
 }
-// ---------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 
 Material::Material(const float r, const float g, const float b) {
   iluminacion = false;
@@ -227,27 +216,27 @@ Material::Material(const float r, const float g, const float b) {
   ponerNombre("material color plano sin iluminación");
 }
 
-//----------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void Material::coloresCero() {
-   const VectorRGB ceroRGBopaco(0.0,0.0,0.0,1.0);
+  const VectorRGB ceroRGBopaco(0.0, 0.0, 0.0, 1.0);
 
-   color         =
+  color =
 
-   del.emision   =
-   del.ambiente  =
-   del.difusa    =
-   del.especular =
+  del.emision = 
+  del.ambiente = 
+  del.difusa = 
+  del.especular =
 
-   tra.emision   =
-   tra.ambiente  =
-   tra.difusa    =
-   tra.especular = ceroRGBopaco;
+  tra.emision = 
+  tra.ambiente = 
+  tra.difusa = 
+  tra.especular = ceroRGBopaco;
 
-   del.exp_brillo =
-   tra.exp_brillo = 1.0;
+  del.exp_brillo = tra.exp_brillo = 1.0;
 }
-//----------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 Material::~Material() {
   if (tex != nullptr) {
@@ -255,15 +244,18 @@ Material::~Material() {
     tex = nullptr;
   }
 }
-//----------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 void Material::ponerNombre(const std::string& nuevo_nombre) {
   nombre_mat = nuevo_nombre;
 }
-//----------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 std::string Material::nombre() const { return nombre_mat; }
-//----------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 void Material::activar() {
   // Activar textura
@@ -294,7 +286,7 @@ void Material::activar() {
   glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 }
 
-//**********************************************************************
+//*****************************************************************************
 
 FuenteLuz::FuenteLuz(const VectorRGB& p_color) {
   // CError();
@@ -305,32 +297,32 @@ FuenteLuz::FuenteLuz(const VectorRGB& p_color) {
   color_difuso = p_color;
   color_especular = p_color;
 
-  indice_fuente = -1;   // la marca como no activable hasta que no se le asigne
-                     // índice
+  indice_fuente = -1;  // la marca como no activable hasta que no se le asigne
+                       // índice
 
   // CError();
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 FuenteLuz::~FuenteLuz() {}
 
+//-----------------------------------------------------------------------------
+
 void FuenteLuz::activar() {}
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void FuenteLuz::preActivar() {
+  glEnable(GL_LIGHT0 + indice_fuente);
 
-   glEnable(GL_LIGHT0 + indice_fuente);
-
-   // Fijamos los colores de la fuente de luz
-   glLightfv(GL_LIGHT0 + indice_fuente, GL_AMBIENT, color_ambiente);
-   glLightfv(GL_LIGHT0 + indice_fuente, GL_DIFFUSE, color_difuso);
-   glLightfv(GL_LIGHT0 + indice_fuente, GL_SPECULAR, color_especular);
-   
+  // Fijamos los colores de la fuente de luz
+  glLightfv(GL_LIGHT0 + indice_fuente, GL_AMBIENT, color_ambiente);
+  glLightfv(GL_LIGHT0 + indice_fuente, GL_DIFFUSE, color_difuso);
+  glLightfv(GL_LIGHT0 + indice_fuente, GL_SPECULAR, color_especular);
 }
 
-//----------------------------------------------------------------------
+//*****************************************************************************
 
 FuenteDireccional::FuenteDireccional(GLfloat p_longitud_inicial,
                                      GLfloat p_latitud_inicial,
@@ -339,6 +331,8 @@ FuenteDireccional::FuenteDireccional(GLfloat p_longitud_inicial,
   longitud = longitud_inicial = p_latitud_inicial;
   latitud = latitud_inicial = p_latitud_inicial;
 }
+
+//-----------------------------------------------------------------------------
 
 void FuenteDireccional::activar() {
   if (indice_fuente == -1) return;  // La fuente no se puede activar
@@ -357,6 +351,8 @@ void FuenteDireccional::activar() {
   glPopMatrix();
 }
 
+//-----------------------------------------------------------------------------
+
 void FuenteDireccional::variarAngulo(unsigned angulo, float incremento) {
   if (angulo == 0)
     longitud += incremento;
@@ -367,6 +363,8 @@ void FuenteDireccional::variarAngulo(unsigned angulo, float incremento) {
       latitud = std::max(latitud + incremento, -90.0f);
   }
 }
+
+//-----------------------------------------------------------------------------
 
 bool FuenteDireccional::gestionarEventoTeclaEspecial(int key) {
   bool actualizar = true;
@@ -400,11 +398,15 @@ bool FuenteDireccional::gestionarEventoTeclaEspecial(int key) {
   return actualizar;
 }
 
+//*****************************************************************************
+
 FuentePosicional::FuentePosicional(const Tupla3f& p_posicion,
                                    const VectorRGB& p_color)
     : FuenteLuz(p_color) {
   posicion = p_posicion;
 }
+
+//-----------------------------------------------------------------------------
 
 void FuentePosicional::activar() {
   if (indice_fuente == -1) return;  // La fuente no se puede activar
@@ -415,24 +417,23 @@ void FuentePosicional::activar() {
   glLightfv(GL_LIGHT0 + indice_fuente, GL_POSITION, posicion_homogenea);
 }
 
-//**********************************************************************
+//*****************************************************************************
 
-ColFuentesLuz::ColFuentesLuz()
+ColFuentesLuz::ColFuentesLuz() { max_num_fuentes = -1; }
+
+//-----------------------------------------------------------------------------
+
+void ColFuentesLuz::insertar(FuenteLuz* pf)  // inserta una nueva
 {
-   max_num_fuentes = -1 ;
-}
-//----------------------------------------------------------------------
+  assert(pf != nullptr);
 
-void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
-{
-   assert( pf != nullptr );
-
-   pf->indice_fuente = vpf.size() ;
-   vpf.push_back( pf ) ;
+  pf->indice_fuente = vpf.size();
+  vpf.push_back(pf);
 }
-//----------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+
 // activa una colección de fuentes de luz
-
 void ColFuentesLuz::activar(unsigned id_prog) {
   glEnable(GL_LIGHTING);
 
@@ -441,19 +442,20 @@ void ColFuentesLuz::activar(unsigned id_prog) {
   for (unsigned i = vpf.size(); i < max_num_fuentes; i++)
     glDisable(GL_LIGHT0 + i);
 }
-//----------------------------------------------------------------------
-FuenteLuz * ColFuentesLuz::ptrFuente( unsigned i )
-{
-   assert(i < vpf.size()) ;
-   return vpf[i] ;
+
+//------------------------------------------------------------------------------
+
+FuenteLuz* ColFuentesLuz::ptrFuente(unsigned i) {
+  assert(i < vpf.size());
+  return vpf[i];
 }
-//----------------------------------------------------------------------
-ColFuentesLuz::~ColFuentesLuz()
-{
-   for( unsigned i = 0 ; i < vpf.size() ; i++ )
-   {
-      assert( vpf[i] != NULL );
-      delete vpf[i] ;
-      vpf[i] = NULL ;
-   }
+
+//------------------------------------------------------------------------------
+
+ColFuentesLuz::~ColFuentesLuz() {
+  for (unsigned i = 0; i < vpf.size(); i++) {
+    assert(vpf[i] != NULL);
+    delete vpf[i];
+    vpf[i] = NULL;
+  }
 }
