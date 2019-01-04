@@ -163,7 +163,7 @@ void MallaRevol::generarMallaRevol(std::vector<Tupla3f> perfil_original,
   }
 }
 
-/** MallaRevol::definirCoordenadasTexturas() *****************************************/
+/** MallaRevol::definirCoordenadasTexturas() **********************************/
 /** Genera las coordenadas de las texturas de la malla de revolución         **/
 /******************************************************************************/
 void MallaRevol::definirCoordenadasTexturas() {
@@ -185,9 +185,9 @@ void MallaRevol::definirCoordenadasTexturas() {
   // Y: tj = dj/d(j+1)
   for (unsigned i = 0; i < nper; i++) {
     for (unsigned j = 0; j < nvp; j++) {
-      float sj = i / (nper - 1);
+      float sj = (float) i / (nper - 1);
       float tj = distancia[j] / distancia[nvp - 1];
-      coordenadas_texturas.push_back(Tupla2f{sj, tj});
+      coordenadas_texturas.push_back(Tupla2f{sj, 1- tj});
     }
   }
 }
