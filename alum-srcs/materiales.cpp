@@ -74,22 +74,23 @@ void PilaMateriales::pop(  )
 
 //**********************************************************************
 
-Textura::Textura( const std::string & nombreArchivoJPG )
-{
-   // COMPLETAR: práctica 4: inicializar todas las variables
-   // .....
-
+Textura::Textura(const std::string& nombreArchivoJPG) {
+  enviada = false;
+  glGenTextures(1, &ident_textura);
+  modo_gen_ct =
+      mgct_desactivada;  // desactivamos las coordenadas automáticas
+  imagen = new jpg::Imagen(nombreArchivoJPG);
 }
 
 // ---------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 
-void Textura::enviar()
-{
-   // COMPLETAR: práctica 4: enviar la imagen de textura a la GPU
-   // .......
+void Textura::enviar() {
+  gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imagen->tamX(), imagen->tamY(),
+                    GL_RGB, GL_UNSIGNED_BYTE, imagen->leerPixels());
 
+  enviada = true;
 }
 
 //----------------------------------------------------------------------
@@ -108,12 +109,51 @@ Textura::~Textura( )
 //----------------------------------------------------------------------
 // por ahora, se asume la unidad de texturas #0
 
-void Textura::activar(  )
-{
-   // COMPLETAR: práctica 4: enviar la textura a la GPU (solo la primera vez) y activarla
-   // .......
+void Textura::activar() {
+  glEnable(GL_TEXTURE_2D);
 
+  // Enviar a la GPU la primera vez
+  if (!enviada) enviar();
+
+  // Activar textura
+  glBindBuffer(GL_TEXTURE_2D, ident_textura);
+
+  // Generación automática de coordenadas
+  if (modo_gen_ct == mgct_desactivada) {
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+  } else {
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+
+    if (modo_gen_ct == mgct_coords_objeto) {
+      glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+      glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+
+      glTexGenfv(GL_S, GL_OBJECT_PLANE, coefs_s);
+      glTexGenfv(GL_T, GL_OBJECT_PLANE, coefs_t);
+    } else {
+      glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+      glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+
+      glTexGenfv(GL_S, GL_EYE_PLANE, coefs_s);
+      glTexGenfv(GL_T, GL_EYE_PLANE, coefs_t);
+    }
+  }
 }
+// *********************************************************************
+
+TexturaXY::TexturaXY(const std::string& nom) : Textura(nom) {
+  modo_gen_ct = mgct_coords_ojo;
+
+  coefs_s[0] = 1.0;
+  for (unsigned i = 1; i < 4; i++) coefs_s[i] = 0.0;
+
+  coefs_t[1] = 1.0;
+  for (unsigned i = 0; i < 4; i++)
+    if (i != 1) coefs_t[i] = 0.0;
+}
+
 // *********************************************************************
 
 Material::Material()
@@ -178,8 +218,7 @@ Material::Material( const float r, const float g, const float b )
 
 //----------------------------------------------------------------------
 
-void Material::coloresCero()
-{
+void Material::coloresCero() {
    const VectorRGB ceroRGBopaco(0.0,0.0,0.0,1.0);
 
    color         =
@@ -192,10 +231,10 @@ void Material::coloresCero()
    tra.emision   =
    tra.ambiente  =
    tra.difusa    =
-   tra.especular = ceroRGBopaco ;
+   tra.especular = ceroRGBopaco;
 
    del.exp_brillo =
-   tra.exp_brillo = 1.0 ;
+   tra.exp_brillo = 1.0;
 }
 //----------------------------------------------------------------------
 
