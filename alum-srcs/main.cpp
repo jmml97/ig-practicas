@@ -284,8 +284,12 @@ void FGE_PulsarTeclaCaracter( GLFWwindow* window, unsigned int codepoint )
          cout << "modo de visualización cambiado a: '" << nombreModo[contextoVis.modoVis] << "'" << endl << flush ;
          break ;
       case 'V' :
-        contextoVis.usarVBOs = !contextoVis.usarVBOs;
-        cout << "Usar VBOs: " << contextoVis.usarVBOs << endl << flush;
+        if (contextoVis.modoVis == modoSombreadoPlano) {
+          cout << "El modo de sombreado plano solo se puede utilizar con visualización inmmediata" << endl;
+        } else {
+          contextoVis.usarVBOs = !contextoVis.usarVBOs;
+          cout << "Usar VBOs: " << contextoVis.usarVBOs << endl << flush;
+        }
         break;
 
       default:
@@ -618,7 +622,7 @@ void Inicializa_OpenGL( )
    glEnable( GL_DEPTH_TEST );
 
    // deshabilitar filtro de triangulos por su orientación:
-   glDisable( GL_CULL_FACE );
+   glEnable( GL_CULL_FACE );
 
    // establecer color de fondo: (1,1,1) (blanco)
    glClearColor( 1.0, 1.0, 1.0, 1.0 ) ;
