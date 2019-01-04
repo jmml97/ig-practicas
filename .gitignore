@@ -5,7 +5,6 @@ CamaraInter.hpp
 cauce.cpp
 cauce.hpp
 makefile
-practicas.hpp
 simple_fs.glsl
 simple_vs.glsl
 bin
