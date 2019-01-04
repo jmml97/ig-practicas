@@ -599,13 +599,10 @@ void Inicializa_GLFW( int argc, char * argv[] )
 // ---------------------------------------------------------------------
 // Inicialización de las variables globales del programa
 
-void Inicializa_Vars( )
-{
-   // inicializar práctica actual
-   practicaActual = 1 ;
-   contextoVis.modoVis = modoMateriales ;
-
-
+void Inicializa_Vars() {
+  // inicializar práctica actual
+  practicaActual = 2;
+  contextoVis.modoVis = modoAlambre;
 }
 
 // ---------------------------------------------------------------------
