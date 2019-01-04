@@ -66,7 +66,7 @@ void MallaRevol::definirMallaRevol(std::vector<Tupla3f> perfil_original,
                                    const unsigned num_vert_per,
                                    const bool crear_tapas,
                                    const bool cerrar_malla,
-                                   const bool crear_texturas = false) {
+                                   const bool crear_texturas) {
   nvp = num_vert_per;
   nper = num_per;
 
