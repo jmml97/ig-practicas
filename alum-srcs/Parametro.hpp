@@ -14,9 +14,6 @@ typedef std::function<Matriz4f(float)> TFuncionCMF;
 
 class Parametro {
  private:
-  // COMPLETAR: práctica 3: definir variables de instancia privadas de un
-  // parámetro
-
   const std::string descripcion;        /* Descripción del grado de libertad */
   const bool acotado;                   /* true: el valor oscila entre dos   */ 
                                         /* valores                           */

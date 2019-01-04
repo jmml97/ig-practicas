@@ -44,11 +44,7 @@ bool P3_FGE_PulsarTeclaCaracter(unsigned char tecla) {
 
   switch (toupper(tecla)) {
     case 'O':
-      // COMPLETAR: práctica 3: activar siguiente objeto de la práctica
-      //           (solo en el caso de que se incluyan varios objetos en la
-      //           práctica)
-      // ....
-
+      // Solo hay un objeto
       break;
 
     case 'A':
