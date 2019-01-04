@@ -164,56 +164,67 @@ Material::Material()
 }
 // ---------------------------------------------------------------------
 
-Material::Material( const std::string & nombreArchivoJPG )
-{
-   iluminacion    = false ;
-   tex            = new Textura( nombreArchivoJPG ) ;
+Material::Material(const std::string& nombreArchivoJPG) {
+  iluminacion = false;
+  tex = new Textura(nombreArchivoJPG);
 
-   coloresCero();
+  coloresCero();
 
-   del.emision   = VectorRGB(0.0,0.0,0.0,1.0);
-   del.ambiente  = VectorRGB( 0.0, 0.0, 0.0, 1.0);
-   del.difusa    = VectorRGB( 0.5, 0.5, 0.5, 1.0 );
-   del.especular = VectorRGB( 1.0, 1.0, 1.0, 1.0 );
+  del.emision = VectorRGB(0.0, 0.0, 0.0, 1.0);
+  del.ambiente = VectorRGB(0.0, 0.0, 0.0, 1.0);
+  del.difusa = VectorRGB(0.5, 0.5, 0.5, 1.0);
+  del.especular = VectorRGB(1.0, 1.0, 1.0, 1.0);
 
-   del.emision   = VectorRGB(0.0,0.0,0.0,1.0);
-   del.ambiente  = VectorRGB( 0.0, 0.0, 0.0, 1.0);
-   tra.difusa    = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
-   tra.especular = VectorRGB( 0.2, 0.2, 0.2, 1.0 );
-
+  tra.emision = VectorRGB(0.0, 0.0, 0.0, 1.0);
+  tra.ambiente = VectorRGB(0.0, 0.0, 0.0, 1.0);
+  tra.difusa = VectorRGB(0.2, 0.2, 0.2, 1.0);
+  tra.especular = VectorRGB(0.2, 0.2, 0.2, 1.0);
 }
 
 // ---------------------------------------------------------------------
 // crea un material usando textura y coeficientes: ka,kd,ks y exponente
 // (la textura puede ser NULL, la ilum. queda activada)
 
-Material::Material( Textura * text, float ka, float kd, float ks, float exp )
-:  Material()
-{
-   // COMPLETAR: práctica 4: inicializar material usando text,ka,kd,ks,exp
-   // .....
+Material::Material(Textura* text, float ka, float kd, float ks, float exp)
+    : Material() {
 
-   ponerNombre("material con textura e iluminación") ;
+  iluminacion = true;
+  tex = text;
 
- }
+  del.emision = tra.emision = {0.0, 0.0, 0.0, 1.0};
+  del.ambiente = tra.ambiente = {ka, ka, ka, 1.0};
+  del.difusa = tra.difusa = {kd, kd, kd, 1.0};
+  del.especular = tra.especular = {ks, ks, ks, 1.0};
+  del.exp_brillo = tra.exp_brillo = exp;
+
+  ponerNombre("material con textura e iluminación");
+}
 
 // ---------------------------------------------------------------------
 // crea un material con un color único para las componentes ambiental y difusa
 // en el lugar de textura (textura == NULL)
-Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, float exp )
-{
-   // COMPLETAR: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
-   // .....
+Material::Material(const Tupla3f& colorAmbDif, float ka, float kd, float ks,
+                   float exp) {
+  VectorRGB color = {colorAmbDif(R), colorAmbDif(G), colorAmbDif(B), 1.0};
 
-   ponerNombre("material color plano, ilum.") ;
+  iluminacion = true;
+  tex = NULL;
+
+  del.emision = tra.emision = {0.0, 0.0, 0.0, 1.0};
+  del.ambiente = del.difusa = tra.ambiente = tra.difusa = color;
+  del.especular = tra.especular = {ks, ks, ks, 1.0};
+  del.exp_brillo = tra.exp_brillo = exp;
+
+  ponerNombre("material color plano con iluminación");
 }
 // ---------------------------------------------------------------------
 
-Material::Material( const float r, const float g, const float b )
-{
-   // COMPLETAR: práctica 4: inicializar material usando un color plano sin iluminación
-   // .....
+Material::Material(const float r, const float g, const float b) {
+  iluminacion = false;
+  tex = NULL;
+  color = {r, g, b, 1.0};
 
+  ponerNombre("material color plano sin iluminación");
 }
 
 //----------------------------------------------------------------------
@@ -238,31 +249,49 @@ void Material::coloresCero() {
 }
 //----------------------------------------------------------------------
 
-Material::~Material()
-{
-   if ( tex != nullptr )
-   {  delete tex ;
-      tex = nullptr ;
-   }
+Material::~Material() {
+  if (tex != nullptr) {
+    delete tex;
+    tex = nullptr;
+  }
 }
 //----------------------------------------------------------------------
 
-void Material::ponerNombre( const std::string & nuevo_nombre )
-{
-   nombre_mat = nuevo_nombre ;
+void Material::ponerNombre(const std::string& nuevo_nombre) {
+  nombre_mat = nuevo_nombre;
 }
 //----------------------------------------------------------------------
 
-std::string Material::nombre() const
-{
-   return nombre_mat ;
-}
+std::string Material::nombre() const { return nombre_mat; }
 //----------------------------------------------------------------------
 
-void Material::activar(  )
-{
-   
+void Material::activar() {
+  // Activar textura
+  if (tex == NULL)
+    glDisable(GL_TEXTURE_2D);
+  else
+    tex->activar();
 
+  if (iluminacion) {
+    // Cara delantera
+    glMaterialfv(GL_FRONT, GL_EMISSION, del.emision);     // M_E
+    glMaterialfv(GL_FRONT, GL_AMBIENT, del.ambiente);     // M_A
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, del.difusa);       // M_D
+    glMaterialfv(GL_FRONT, GL_SPECULAR, del.especular);   // M_S
+    glMaterialf(GL_FRONT, GL_SHININESS, del.exp_brillo);  // e
+
+    // Cara trasera
+    glMaterialfv(GL_BACK, GL_EMISSION, tra.emision);     // M_E
+    glMaterialfv(GL_BACK, GL_AMBIENT, tra.ambiente);     // M_A
+    glMaterialfv(GL_BACK, GL_DIFFUSE, tra.difusa);       // M_D
+    glMaterialfv(GL_BACK, GL_SPECULAR, tra.especular);   // M_S
+    glMaterialf(GL_BACK, GL_SHININESS, tra.exp_brillo);  // e
+  } else {
+    glDisable(GL_LIGHTING);
+    glColor4fv(color);
+  }
+
+  glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 }
 
 //**********************************************************************
@@ -281,6 +310,12 @@ FuenteLuz::FuenteLuz(const VectorRGB& p_color) {
 
   // CError();
 }
+
+//----------------------------------------------------------------------
+
+FuenteLuz::~FuenteLuz() {}
+
+void FuenteLuz::activar() {}
 
 //----------------------------------------------------------------------
 
