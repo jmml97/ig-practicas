@@ -14,7 +14,7 @@
 
 // Crea un VBO del tipo especificado enlazándole la matriz correspondiente
 // Los VBO (Vertex Buffer Object) son simplemente Buffer Object que almacenan
-// información de los vértices de una figura en la GPU. 
+// información de los vértices de una figura en la GPU.
 GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid* puntero) {
   GLuint id_VBO;
 
@@ -52,20 +52,21 @@ MallaInd::MallaInd() : MallaInd("malla indexada, anónima") {}
 MallaInd::MallaInd(const std::string& nombreIni) {
   // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
   ponerNombre(nombreIni);
-  id_VBO_vert = id_VBO_caras = 0;
+
+  id_VBO_vert = id_VBO_caras = id_VBO_colores = id_VBO_normales =
+      id_VBO_texturas = 0;
 }
 
 // -----------------------------------------------------------------------------
 // calcula las dos tablas de normales
 void MallaInd::calcular_normales() {
   if (normales_caras.empty()) {
-
     // p, q, r := vértices de la cara
     // a := lado q - p
-    // b := lado r - p 
+    // b := lado r - p
     Tupla3f a, b, p, q, r, n;
-    normales_vertices =
-        std::vector<Tupla3f>(coordenadas_vertices.size(), Tupla3f{0.0, 0.0, 0.0});
+    normales_vertices = std::vector<Tupla3f>(coordenadas_vertices.size(),
+                                             Tupla3f{0.0, 0.0, 0.0});
 
     for (size_t i = 0; i < caras.size(); i++) {
       p = coordenadas_vertices[caras[i](0)];
@@ -75,7 +76,7 @@ void MallaInd::calcular_normales() {
       a = q - p;
       b = r - p;
 
-      // n es el vector perpendicular a los vectores a y b obtenido mediante el 
+      // n es el vector perpendicular a los vectores a y b obtenido mediante el
       // producto vectorial
       n = a.cross(b);
 
@@ -103,21 +104,32 @@ void MallaInd::calcular_normales() {
 // Crea los VBOs correspondientes para los vértices, caras y colores
 void MallaInd::inicializarVBOs() {
   if (id_VBO_vert == 0) {
-    id_VBO_vert =
-        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * coordenadas_vertices.size() * 3,
-                 coordenadas_vertices.data());
+    id_VBO_vert = crearVBO(GL_ARRAY_BUFFER,
+                           sizeof(float) * coordenadas_vertices.size() * 3,
+                           coordenadas_vertices.data());
   }
 
   if (id_VBO_caras == 0) {
-    id_VBO_caras =
-        crearVBO(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(unsigned) * 3 * caras.size(), caras.data());
+    id_VBO_caras = crearVBO(GL_ELEMENT_ARRAY_BUFFER,
+                            sizeof(unsigned) * 3 * caras.size(), caras.data());
   }
 
   if (colores.size() > 0) {
-    id_VBO_colores =
-        crearVBO(GL_ARRAY_BUFFER, sizeof(float) * coordenadas_vertices.size() * 3,
-                 colores.data());
+    id_VBO_colores = crearVBO(GL_ARRAY_BUFFER,
+                              sizeof(float) * coordenadas_vertices.size() * 3,
+                              colores.data());
+  }
+
+  if (normales_vertices.size() > 0) {
+    id_VBO_normales = crearVBO(GL_ARRAY_BUFFER,
+                               sizeof(float) * coordenadas_vertices.size() * 3,
+                               normales_vertices.data());
+  }
+
+  if (coordenadas_texturas.size() > 0) {
+    id_VBO_texturas = crearVBO(GL_ARRAY_BUFFER,
+                               sizeof(float) * 2L * coordenadas_vertices.size(),
+                               coordenadas_texturas.data());
   }
 }
 
@@ -128,7 +140,15 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* para la escritura y usado durante el renderizado.                        */
   glEnableClientState(GL_VERTEX_ARRAY);
 
-  if (colores.size() > 0) {
+  if (usar_texturas) {
+    glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    if (coordenadas_texturas.size() > 0) {
+      glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+  } else if (colores.size() > 0) {
     glColorPointer(3, GL_FLOAT, 0, colores.data());
     glEnableClientState(GL_COLOR_ARRAY);
   }
@@ -147,18 +167,19 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
   /* especifica qué tipo de primitivas se van a usar.                         */
 
   /* void glDrawElements(GLenum mode,                     */
- 	/*                     GLsizei count,                   */
- 	/*                     GLenum type,                     */
- 	/*                     const GLvoid * indices);         */
+  /*                     GLsizei count,                   */
+  /*                     GLenum type,                     */
+  /*                     const GLvoid * indices);         */
   /* Renderiza primitivas a partir de datos de un array.  */
 
-  glDrawElements(GL_TRIANGLES, caras.size() * 3, GL_UNSIGNED_INT,
-                 caras.data());
+  glDrawElements(GL_TRIANGLES, caras.size() * 3, GL_UNSIGNED_INT, caras.data());
 
   /* void glEnableClientState(GLenum cap)                                     */
   /* Permite desactivar las funcionalidades 'cap' en el cliente.              */
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 // ----------------------------------------------------------------------------
@@ -167,9 +188,20 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
 void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
   inicializarVBOs();
 
-  // Colores (puede que el objeto no esté coloreado)
-  if (colores.size() > 0) {
-    /* void glBindBuffer(	GLenum  	target,                             */
+  if (usar_texturas) {
+    glBindBuffer(GL_ARRAY_BUFFER, id_VBO_normales);
+    glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    if (coordenadas_texturas.size() > 0) {
+      glBindBuffer(GL_ARRAY_BUFFER, id_VBO_texturas);
+      glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+  } else if (colores.size() > 0) {  // Colores (puede que el objeto no esté
+                                    // coloreado)
+
+    /* void glBindBuffer(	GLenum  	target, */
     /*                    GLuint  	buffer);                            */
     /* Para poder modificar un objeto de OpenGL es necesario que esté   */
     /* asociado a un contexto, que especifica el comportamiento de este */
@@ -177,9 +209,9 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO_colores);
 
     /* void glColorPointer(GLint  	size,                               */
- 	  /*                     GLenum  	type,                               */
- 	  /*                     GLsizei  	stride,                           */
- 	  /*                     const GLvoid *  	pointer);                   */
+    /*                     GLenum  	type,                               */
+    /*                     GLsizei  	stride,                           */
+    /*                     const GLvoid *  	pointer);                   */
     /* Especifica la ubicación el formato de los datos de un array de   */
     /* componentes de color a usar durante el renderizado	              */
     glColorPointer(3, GL_FLOAT, 0, 0);
@@ -190,11 +222,11 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
   glBindBuffer(GL_ARRAY_BUFFER, id_VBO_vert);
 
   /* void glVertexPointer(GLint  	size,                               */
- 	/*                      GLenum  	type,º	                          */
- 	/*                      GLsizei  	stride,                           */
- 	/*                      const GLvoid *  	pointer);                 */
+  /*                      GLenum  	type,º	                          */
+  /*                      GLsizei  	stride,                           */
+  /*                      const GLvoid *  	pointer);                 */
   /* Especifica la ubicación el formato de los datos de un array de   */
-  /* coordenadas de vértices a usar durante el renderizado	          */ 
+  /* coordenadas de vértices a usar durante el renderizado	          */
   glVertexPointer(3, GL_FLOAT, 0, NULL);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -206,19 +238,56 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 // -----------------------------------------------------------------------------
 
+void MallaInd::visualizarDE_MISombreadoPlano(ContextoVis& cv) {
+  glBegin(GL_TRIANGLES);
+
+  for (unsigned i = 0; i < caras.size(); i++) {
+    glNormal3fv(normales_caras[i]);
+    for (unsigned j = 0; j < 3; j++) {
+      unsigned indice_vertice = caras[i](j);
+      if (coordenadas_texturas.size() > 0)
+        glTexCoord2fv(coordenadas_texturas[indice_vertice]);
+      glVertex3fv(coordenadas_vertices[indice_vertice]);
+    }
+  }
+
+  glEnd();
+}
+
 void MallaInd::visualizarGL(ContextoVis& cv) {
+  usar_texturas =
+      cv.modoVis == modoSombreadoPlano || cv.modoVis == modoSombreadoSuave;
+
+  if (!usar_texturas) {
+    glDisable(GL_LIGHTING);
+  } else if (normales_vertices.size() == 0) {
+    calcular_normales();
+  }
+  
+
   /* Cambiamos el modo de visualización según lo indicado en 'cv' */
   switch (cv.modoVis) {
     case modoPuntos:
       glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+      glShadeModel(GL_SMOOTH);
       break;
     case modoSolido:
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       break;
+    case modoSombreadoPlano:
+       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+       glShadeModel(GL_FLAT);
+       break;
+     case modoSombreadoSuave:
+       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+       glShadeModel(GL_SMOOTH);
+       break;
     case modoAlambre:
     default:
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -228,6 +297,8 @@ void MallaInd::visualizarGL(ContextoVis& cv) {
   // Seleccionamos la función a utilizar según vayamos a usar VBOs o no.
   if (cv.usarVBOs) {
     visualizarDE_VBOs(cv);
+  } else if (cv.modoVis == modoSombreadoPlano) {
+    visualizarDE_MISombreadoPlano(cv);
   } else {
     visualizarDE_MI(cv);
   }
@@ -246,11 +317,10 @@ void MallaInd::fijarColorNodo(const Tupla3f& color) {
 
 Cubo::Cubo() : MallaInd("malla cubo") {
   coordenadas_vertices = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
-                     {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0},
-                     {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}};
-  caras = {{0, 4, 5}, {0, 1, 5}, {1, 5, 6}, {1, 2, 6},
-                 {2, 6, 7}, {2, 3, 7}, {3, 7, 4}, {3, 0, 4},
-                 {4, 5, 6}, {4, 7, 6}, {0, 1, 2}, {0, 5, 2}};
+                          {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {1.0, 1.0, 0.0},
+                          {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}};
+  caras = {{0, 4, 5}, {0, 1, 5}, {1, 5, 6}, {1, 2, 6}, {2, 6, 7}, {2, 3, 7},
+           {3, 7, 4}, {3, 0, 4}, {4, 5, 6}, {4, 7, 6}, {0, 1, 2}, {0, 5, 2}};
 }
 // *****************************************************************************
 

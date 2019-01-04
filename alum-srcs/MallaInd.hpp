@@ -25,8 +25,10 @@ class MallaInd : public Objeto3D {
 
   std::vector<Tupla2f> coordenadas_texturas;
 
-  // ID de los VBO de vertices y caras
-  GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores;
+  GLuint id_VBO_vert, id_VBO_caras, id_VBO_colores, id_VBO_normales,
+      id_VBO_texturas;
+
+  bool usar_texturas;
 
   // calculo de las normales de esta malla
   void calcular_normales();
@@ -37,6 +39,10 @@ class MallaInd : public Objeto3D {
   void visualizarDE_MI(ContextoVis& cv);
   // visualizar con 'draw elements', en modo diferido (con VBOS)
   void visualizarDE_VBOs(ContextoVis& cv);
+  // Visualizar con glBegin/glEnd en modo inmediato
+  // Es la única forma de poder asignar una normal (o cualquier otro atributo) 
+  // a un triángulo
+  void visualizarDE_MISombreadoPlano(ContextoVis & cv);
 
  public:
   // crea una malla vacía (nombre: "malla indexada nueva vacía")
