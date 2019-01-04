@@ -29,7 +29,7 @@ const bool trazam = false;
 //*********************************************************************
 
 PilaMateriales::PilaMateriales() { actual = nullptr; }
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void PilaMateriales::activarMaterial(Material* material) {
   if (material != actual) {
@@ -38,17 +38,17 @@ void PilaMateriales::activarMaterial(Material* material) {
   }
 }
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void PilaMateriales::activarActual() {
   if (actual != nullptr) actual->activar();
 }
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void PilaMateriales::push() { pila.push_back(actual); }
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void PilaMateriales::pop() {
   if (pila.size() == 0) {
@@ -64,18 +64,20 @@ void PilaMateriales::pop() {
   activarMaterial(anterior);  // cambia 'actual'
 }
 
-//**********************************************************************
+//*****************************************************************************
 
 Textura::Textura(const std::string& nombreArchivoJPG) {
   enviada = false;
-  glGenTextures(1, &ident_textura);
   modo_gen_ct = mgct_desactivada;  // desactivamos las coordenadas automáticas
   imagen = new jpg::Imagen(nombreArchivoJPG);
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void Textura::enviar() {
+  glGenTextures(1, &ident_textura);
+  glBindTexture(GL_TEXTURE_2D, ident_textura);
+
   gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imagen->tamX(), imagen->tamY(),
                     GL_RGB, GL_UNSIGNED_BYTE, imagen->leerPixels());
 
@@ -100,10 +102,11 @@ void Textura::activar() {
   glEnable(GL_TEXTURE_2D);
 
   // Enviar a la GPU la primera vez
-  if (!enviada) enviar();
-
-  // Activar textura
-  glBindBuffer(GL_TEXTURE_2D, ident_textura);
+  if (!enviada) {
+    enviar();
+  } else {
+    glBindBuffer(GL_TEXTURE_2D, ident_textura);
+  }; 
 
   // Generación automática de coordenadas
   if (modo_gen_ct == mgct_desactivada) {
@@ -153,7 +156,7 @@ Material::Material() {
 // ---------------------------------------------------------------------
 
 Material::Material(const std::string& nombreArchivoJPG) {
-  iluminacion = false;
+  iluminacion = true;
   tex = new Textura(nombreArchivoJPG);
 
   coloresCero();
@@ -167,6 +170,9 @@ Material::Material(const std::string& nombreArchivoJPG) {
   tra.ambiente = VectorRGB(0.0, 0.0, 0.0, 1.0);
   tra.difusa = VectorRGB(0.2, 0.2, 0.2, 1.0);
   tra.especular = VectorRGB(0.2, 0.2, 0.2, 1.0);
+
+  del.exp_brillo = 1.0;
+  tra.exp_brillo = 1.0;
 }
 
 // ---------------------------------------------------------------------
@@ -289,8 +295,6 @@ void Material::activar() {
 //*****************************************************************************
 
 FuenteLuz::FuenteLuz(const VectorRGB& p_color) {
-  // CError();
-
   if (trazam) cout << "creando fuente de luz." << endl << flush;
 
   color_ambiente = p_color;
@@ -299,8 +303,6 @@ FuenteLuz::FuenteLuz(const VectorRGB& p_color) {
 
   indice_fuente = -1;  // la marca como no activable hasta que no se le asigne
                        // índice
-
-  // CError();
 }
 
 //-----------------------------------------------------------------------------
@@ -392,9 +394,12 @@ bool FuenteDireccional::gestionarEventoTeclaEspecial(int key) {
       cout << "tecla no usable para la fuente de luz." << endl << flush;
   }
 
-  // if ( actualizar )
-  //   cout << "fuente de luz cambiada: longi == " << longi << ", lati == " <<
-  //   lati << endl << flush ;
+  if (actualizar) {
+    cout << "fuente de luz cambiada: longitud == " << longitud
+         << ", latitud == " << latitud << endl
+         << flush;
+  }
+
   return actualizar;
 }
 
