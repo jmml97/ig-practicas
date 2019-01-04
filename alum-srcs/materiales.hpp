@@ -237,11 +237,47 @@ class ColFuentesLuz {
   ColFuentesLuz();  // crea la colección vacía
   ~ColFuentesLuz();
   void insertar(FuenteLuz* pf);      // inserta una nueva
-  void activar(unsigned id_prog);    // activa las fuentes de luz
+  void activar();    // activa las fuentes de luz
   FuenteLuz* ptrFuente(unsigned i);  // devuelve ptr a la fuente de luz numero i
 
  private:
   std::vector<FuenteLuz*> vpf;  // vector de punteros a fuentes
   GLint max_num_fuentes;
 };
+
+//******************************************************************************
+// Clases de la práctica 4
+// -----------------------
+// Clases que se van a utilizar para los materiales de la práctica 4
+
+class MaterialLata : public Material {
+ public:
+  MaterialLata();
+};
+
+class MaterialTapasLata : public Material {
+ public:
+  MaterialTapasLata();
+};
+
+class MaterialPeonMadera : public Material {
+ public:
+  MaterialPeonMadera();
+};
+
+class MaterialPeonBlanco : public Material {
+ public:
+  MaterialPeonBlanco();
+};
+
+class MaterialPeonNegro : public Material {
+ public:
+  MaterialPeonNegro();
+};
+
+class ColeccionFuentesP4 : public ColFuentesLuz {
+ public:
+  ColeccionFuentesP4();
+};
+
 #endif

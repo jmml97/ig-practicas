@@ -424,7 +424,7 @@ void FuentePosicional::activar() {
 
 //*****************************************************************************
 
-ColFuentesLuz::ColFuentesLuz() { max_num_fuentes = -1; }
+ColFuentesLuz::ColFuentesLuz() { max_num_fuentes = 8; }
 
 //-----------------------------------------------------------------------------
 
@@ -439,7 +439,7 @@ void ColFuentesLuz::insertar(FuenteLuz* pf)  // inserta una nueva
 //------------------------------------------------------------------------------
 
 // activa una colección de fuentes de luz
-void ColFuentesLuz::activar(unsigned id_prog) {
+void ColFuentesLuz::activar() {
   glEnable(GL_LIGHTING);
 
   for (unsigned i = 0; i < vpf.size(); i++) vpf[i]->activar();
@@ -463,4 +463,25 @@ ColFuentesLuz::~ColFuentesLuz() {
     delete vpf[i];
     vpf[i] = NULL;
   }
+}
+
+//******************************************************************************
+
+MaterialLata::MaterialLata()
+    : Material(new Textura("../imgs/lata-coke.jpg"), 0.2, 1.0, 0.5, 1.0) {}
+
+MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.2, 1.0, 0.5, 1.0) {}
+
+MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.0, 0.05, 0.2, 1.0) {}
+
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.8, 0.8, 1.0, 5.0) {}
+
+MaterialPeonMadera::MaterialPeonMadera()
+    : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.4, 1.0) {}
+
+ColeccionFuentesP4::ColeccionFuentesP4() {
+  const VectorRGB color = {0.4, 0.4, 0.4, 1.0};
+
+  insertar(new FuenteDireccional(-10.0, 30.0, color));
+  insertar(new FuentePosicional({0.0, 3.0, 3.0}, color));
 }
