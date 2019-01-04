@@ -189,7 +189,7 @@ void VisualizarFrame()
    using namespace std ;
    using namespace chrono ;
 
-   glUseProgram(idProg); /* Usar nuestro shader personalizado */
+   //glUseProgram(idProg); /* Usar nuestro shader personalizado */
 
    // hacer que la ventana GLFW sea la ventana actual
    glfwMakeContextCurrent( glfw_window );
@@ -601,7 +601,7 @@ void Inicializa_GLFW( int argc, char * argv[] )
 
 void Inicializa_Vars() {
   // inicializar práctica actual
-  practicaActual = 2;
+  practicaActual = 4;
   contextoVis.modoVis = modoAlambre;
 }
 
