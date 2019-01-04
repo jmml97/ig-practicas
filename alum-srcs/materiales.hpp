@@ -179,12 +179,13 @@ class FuenteLuz {
   // p_lati_ini  == idem del ángulo vértical
   // p_color     == color de la fuente de luz (amb, dif y spec )
   FuenteLuz(const VectorRGB& p_color);
+  virtual ~FuenteLuz() = 0;
 
   // cambia el estado de OpenGL de forma que a partir de la llamada
   // se usará esta fuente de luz en los calculos del MIL
   // (en cada momento puede haber varias fuentes activadas)
   void preActivar();
-  virtual void activar();
+  virtual void activar() = 0;
 
  protected:
   VectorRGB color_ambiente,  // color de la fuente para la componente ambiental
@@ -221,7 +222,7 @@ class FuentePosicional : public FuenteLuz {
 
  public:
   FuentePosicional(const Tupla3f& p_posicion, const VectorRGB& p_color);
-  void activar();
+  virtual void activar();
 };
 
 //**********************************************************************
