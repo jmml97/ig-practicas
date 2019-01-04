@@ -28,15 +28,15 @@
 #include "tuplasg.hpp"
 
 // *********************************************************************
-// algunes declaraciones auxiliares importantes
-
+// Algunas declaraciones auxiliares importantes.
 class Material;
 class Textura;
 typedef Tupla4f VectorRGB;
 
-// *********************************************************************
-// clase para una pila de materiales
-
+//**********************************************************************
+// Clase PilaMateriales
+// --------------------
+// Clase para una pila de materiales.
 class PilaMateriales {
  private:
   Material* actual;
@@ -51,9 +51,10 @@ class PilaMateriales {
   void pop();
 };
 
-//**********************************************************************
-// posibles modos de generacion de coords. de textura
-
+// *********************************************************************
+// Tipo ModoGenCT
+// --------------
+// Posibles modos de generacion de coords. de textura.
 typedef enum {
   mgct_desactivada,
   mgct_coords_objeto,
@@ -63,8 +64,7 @@ typedef enum {
 // *********************************************************************
 // Estructura ColoresMat
 // ---------------------
-// estructura con las reflectividades o colores de un material (+exp.brillo)
-
+// Estructura con las reflectividades o colores de un material (+exp.brillo).
 struct ColoresMat {
   VectorRGB emision,  // color de la emisividad del material
       ambiente,       // reflectividad para la componente ambiental (M_A)
@@ -74,53 +74,49 @@ struct ColoresMat {
 };
 
 // *********************************************************************
-// Clase Textura:
-// ---------------
-// clase que encapsula una imagen de textura de OpenGL, así como los
+// Clase Textura
+// -------------
+// Clase que encapsula una imagen de textura de OpenGL, así como los
 // parámetros relativos a como se aplica  a las primitivas que se dibujen
-// mientras está activa
-
+// mientras está activa.
 class Textura {
  public:
-  // carga una imagen de textura en la memoria de vídeo, e
-  // inicializa los atributos de la textura a valores por defecto.
+  // Carga una imagen de textura en la memoria de vídeo e inicializa los
+  // atributos de la textura a valores por defecto.
   Textura(const std::string& nombreArchivoJPG);
 
-  // libera la memoria dinámica usada por la textura, si hay alguna
+  // Libera la memoria dinámica usada por la textura, si hay alguna.
   ~Textura();
 
-  // activar una textura, por ahora en el cauce fijo
+  // Activa una textura, por ahora en el cauce fijo.
   void activar();
 
  protected:       //--------------------------------------------------------
-  void enviar();  // envia la imagen a la GPU (gluBuild2DMipmaps)
+  void enviar();  // Envía la imagen a la GPU (gluBuild2DMipmaps).
 
-  bool enviada;           // true si ha sido enviada, false en otro caso
-  GLuint ident_textura;   // 'nombre' o identif. de textura para OpenGL
-  jpg::Imagen* imagen;    // objeto con los bytes de la imagen de textura
-  ModoGenCT modo_gen_ct;  // modo de generacion de coordenadas de textura
-                          // (desactivadas si modo_gen_ct == mgct_desactivada)
-  float coefs_s[4],  // si 'modo_gen_ct != desactivadas', coeficientes para la
-                     // coord. S
-      coefs_t[4];    // idem para coordenada T
+  bool enviada;           // True si ha sido enviada, false en otro caso.
+  GLuint ident_textura;   // 'nombre' o identif. de textura para OpenGL.
+  jpg::Imagen* imagen;    // Objeto con los bytes de la imagen de textura.
+  ModoGenCT modo_gen_ct;  // Modo de generacion de coordenadas de textura
+                          // (desactivadas si modo_gen_ct == mgct_desactivada).
+  float coefs_s[4],  // Si 'modo_gen_ct != desactivadas', coeficientes para la
+                     // coord. S.
+      coefs_t[4];    // Ídem para coordenada T.
 };
 
-// *********************************************************************
-// clase: TexturaXY
-// ---------------------------------------------------------------------
-// textura con generación automática de coords de textura (s=x,t=y)
-
+// ****************************************************************************
+// Clase TexturaXY
+// ---------------
+// Textura con generación automática de coords de textura (s=x,t=y).
 class TexturaXY : public Textura {
  public:
   TexturaXY(const std::string& nom);
 };
 
-// *********************************************************************
+// ****************************************************************************
 // Clase Material
-// ---------------------------------------------------------------------
-// clase que encapsula los atributos de un material, incluyendo la
-// textura del mismo.
-
+// --------------
+// Encapsula los atributos de un material, incluyendo la textura del mismo.
 class Material {
  public:
   // crea un material con un color plano blanco sin textura
@@ -167,8 +163,8 @@ class Material {
       tra;         // reflectividades de caras traseras, si iluminacion=true
 };
 
-//**********************************************************************
-// Class: FuenteLuz
+//******************************************************************************
+// Clase FuenteLuz
 // ---------------
 // Una clase que contiene los atributo de una fuente de luz OpenGL
 class FuenteLuz {
@@ -193,6 +189,10 @@ class FuenteLuz {
   friend class ColFuentesLuz;
 };
 
+//******************************************************************************
+// Clase FuenteDireccional
+// -----------------------
+// Fuente de luz direccional.
 class FuenteDireccional : public FuenteLuz {
  protected:
   float longitud_inicial, latitud_inicial;
@@ -212,6 +212,10 @@ class FuenteDireccional : public FuenteLuz {
   bool gestionarEventoTeclaEspecial(int key);
 };
 
+//******************************************************************************
+// Clase FuentePosicional
+// ----------------------
+// Fuente de luz posicional.
 class FuentePosicional : public FuenteLuz {
  protected:
   Tupla3f posicion;
@@ -226,9 +230,8 @@ class FuentePosicional : public FuenteLuz {
 
 //**********************************************************************
 // Clase ConjuntoFuentes
-// ---------------
-// clase que contiene los atributos de una coleccion de fuentes de luz OpenGL
-
+// ---------------------
+// Clase que contiene los atributos de una coleccion de fuentes de luz OpenGL.
 class ColFuentesLuz {
  public:
   ColFuentesLuz();  // crea la colección vacía
