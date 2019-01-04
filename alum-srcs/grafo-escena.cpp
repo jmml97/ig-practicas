@@ -76,6 +76,7 @@ EntradaNGE::~EntradaNGE() {
 // los objetos hijos del padre, a la vez que va añadiendo las matrices de
 // transformación del grafo de escena
 void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
+  cv.pilaMateriales.push();
 
   /* void glMatrixMode(GLenum mode);                                  */
   /* Especifica sobre qué matrices se deben realizar las operaciones  */
@@ -89,6 +90,8 @@ void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
   for (auto entrada : entradas) {
     if (entrada.tipo == TipoEntNGE::objeto) {
       entrada.objeto->visualizarGL(cv);
+    } else if (entrada.tipo == TipoEntNGE::material) {
+      cv.pilaMateriales.activarMaterial(entrada.material);
     } else {
       glMatrixMode(GL_MODELVIEW);
       /* void glMultMatrixf(	const GLfloat * m);        */
@@ -98,6 +101,7 @@ void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
   }
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
+  cv.pilaMateriales.pop();
 }
 // -----------------------------------------------------------------------------
 
@@ -370,4 +374,45 @@ BrazoMecanico::BrazoMecanico() {
     0.01
   );
   parametros.push_back(rotacion_pinza2);
+}
+
+//******************************************************************************
+
+Lata::Lata() {
+  ponerNombre("lata de cocacola");
+
+  agregar(MAT_Escalado(1.5, 1.5, 1.5));
+
+  agregar(new MaterialTapasLata);
+  agregar(new MallaRevol("../plys/lata-psup.ply", 30, false, false, true));
+  agregar(new MaterialLata);
+  agregar(new MallaRevol("../plys/lata-pcue.ply", 30, false, false, true));
+  agregar(new MaterialTapasLata);
+  agregar(new MallaRevol("../plys/lata-pinf.ply", 30, false, false, true));
+}
+
+Peones::PeonNegro::PeonNegro() {
+  agregar(new MaterialPeonNegro);
+  agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
+}
+
+Peones::PeonBlanco::PeonBlanco() {
+  agregar(new MaterialPeonBlanco);
+  agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
+}
+
+Peones::PeonMadera::PeonMadera() {
+  agregar(new MaterialPeonMadera);
+  agregar(new MallaRevol("../plys/peon.ply", 30, true, false, false));
+}
+
+Peones::Peones() {
+  ponerNombre("peones");
+
+  agregar(MAT_Escalado(0.5, 0.5, 0.5));
+  agregar(new PeonNegro);
+  agregar(MAT_Traslacion(2.0, 0.0, 1.0));
+  agregar(new PeonBlanco);
+  agregar(MAT_Traslacion(-4.0, 0.0, -2.0));
+  agregar(new PeonMadera);
 }

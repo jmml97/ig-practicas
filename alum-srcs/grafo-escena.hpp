@@ -169,4 +169,35 @@ class BrazoMecanico : public NodoGrafoEscenaParam {
    BrazoMecanico();
 };
 
+//******************************************************************************
+// Clases de la práctica 4
+// -----------------------
+// Clases que se van a utilizar para el grafo de escena de la práctica 4
+
+class Lata : public NodoGrafoEscena {
+ public:
+  Lata();
+};
+
+class Peones : public NodoGrafoEscena {
+ protected:
+  class PeonNegro : public NodoGrafoEscena {
+   public:
+    PeonNegro();
+  };
+
+  class PeonBlanco : public NodoGrafoEscena {
+   public:
+    PeonBlanco();
+  };
+
+  class PeonMadera : public NodoGrafoEscena {
+   public:
+    PeonMadera();
+  };
+
+ public:
+  Peones();
+};
+
 #endif  // GRAFO_ESCENA_HPP
