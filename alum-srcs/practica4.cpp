@@ -56,6 +56,7 @@ bool P4_FGE_PulsarTeclaCaracter(unsigned char tecla) {
     // Iterar entre los ángulos
     case 'G':
       angulo_activo_p4 = (angulo_activo_p4 + 1) % 2;
+      cout << "práctica 4: ángulo_activo " << angulo_activo_p4 << endl;
       res = true;
       break;
 
