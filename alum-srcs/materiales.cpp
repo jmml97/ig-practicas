@@ -75,11 +75,23 @@ Textura::Textura(const std::string& nombreArchivoJPG) {
 //-----------------------------------------------------------------------------
 
 void Textura::enviar() {
-  glGenTextures(1, &ident_textura);
+  if (modo_gen_ct == mgct_coords_objeto) {
+    cout << "Enviar textura: Modo objeto" << endl;
+    glTexGenfv(GL_S, GL_OBJECT_PLANE, coefs_s);
+    glTexGenfv(GL_T, GL_OBJECT_PLANE, coefs_t);
+  }
+
+  if (modo_gen_ct == mgct_coords_ojo) {
+    cout << "Enviar textura: modo ojo" << endl;
+    glTexGenfv(GL_S, GL_EYE_PLANE, coefs_s);
+    glTexGenfv(GL_T, GL_EYE_PLANE, coefs_t);
+  }
+
   glBindTexture(GL_TEXTURE_2D, ident_textura);
 
-  gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imagen->tamX(), imagen->tamY(),
-                    GL_RGB, GL_UNSIGNED_BYTE, imagen->leerPixels());
+  gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, (GLsizei)imagen->tamX(),
+                    (GLsizei)imagen->tamY(), GL_RGB, GL_UNSIGNED_BYTE,
+                    imagen->leerPixels());
 
   enviada = true;
 }
@@ -130,6 +142,8 @@ void Textura::activar() {
       glTexGenfv(GL_T, GL_EYE_PLANE, coefs_t);
     }
   }
+
+  glBindTexture(GL_TEXTURE_2D, ident_textura);
 }
 
 // *********************************************************************
@@ -474,7 +488,7 @@ MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.2, 1.0, 0.5, 1.0) {}
 
 MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.0, 0.05, 0.2, 1.0) {}
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.8, 0.8, 1.0, 5.0) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.6, 0.8, 1.0, 5.0) {}
 
 MaterialPeonMadera::MaterialPeonMadera()
     : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.4, 1.0) {}
