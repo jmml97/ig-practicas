@@ -378,7 +378,7 @@ BrazoMecanico::BrazoMecanico() {
 
 //******************************************************************************
 
-Lata::Lata() {
+EscenaP4::Lata::Lata() {
   ponerNombre("lata de cocacola");
 
   agregar(MAT_Escalado(1.5, 1.5, 1.5));
@@ -391,28 +391,36 @@ Lata::Lata() {
   agregar(new MallaRevol("../plys/lata-pinf.ply", 30, false, false, true));
 }
 
-Peones::PeonNegro::PeonNegro() {
+EscenaP4::Peones::PeonNegro::PeonNegro() {
   agregar(new MaterialPeonNegro);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
 }
 
-Peones::PeonBlanco::PeonBlanco() {
+EscenaP4::Peones::PeonBlanco::PeonBlanco() {
   agregar(new MaterialPeonBlanco);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
 }
 
-Peones::PeonMadera::PeonMadera() {
+EscenaP4::Peones::PeonMadera::PeonMadera() {
   agregar(new MaterialPeonMadera);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, false));
 }
 
-Peones::Peones() {
+EscenaP4::Peones::Peones() {
   ponerNombre("peones");
 
   agregar(MAT_Escalado(0.5, 0.5, 0.5));
   agregar(new PeonNegro);
-  agregar(MAT_Traslacion(2.0, 0.0, 1.0));
+  agregar(MAT_Traslacion(3.0, 0.0, 0.0));
   agregar(new PeonBlanco);
-  agregar(MAT_Traslacion(-4.0, 0.0, -2.0));
+  agregar(MAT_Traslacion(-6.0, 0.0, 0.0));
   agregar(new PeonMadera);
+}
+
+EscenaP4::EscenaP4() {
+  ponerNombre("escenaP4");
+
+  agregar(new Lata);
+  agregar(MAT_Traslacion(0.0, 0.7, 2.0));
+  agregar(new Peones);
 }
