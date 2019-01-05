@@ -218,9 +218,16 @@ Material::Material(const Tupla3f& colorAmbDif, float ka, float kd, float ks,
   iluminacion = true;
   tex = NULL;
 
-  del.emision = tra.emision = {0.0, 0.0, 0.0, 1.0};
-  del.ambiente = del.difusa = tra.ambiente = tra.difusa = color;
-  del.especular = tra.especular = {ks, ks, ks, 1.0};
+  del.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
+  del.ambiente  = ka*color;
+  del.difusa    = kd*color;
+  del.especular = ks*color;
+
+  tra.emision   = VectorRGB(0.0,0.0,0.0, 1.0);
+  tra.ambiente  = ka*color;
+  tra.difusa    = kd*color;
+  tra.especular = ks*color;
+
   del.exp_brillo = tra.exp_brillo = exp;
 
   ponerNombre("material color plano con iluminación");
@@ -482,13 +489,13 @@ ColFuentesLuz::~ColFuentesLuz() {
 //******************************************************************************
 
 MaterialLata::MaterialLata()
-    : Material(new Textura("../imgs/lata-coke.jpg"), 0.2, 1.0, 0.5, 1.0) {}
+    : Material(new Textura("../imgs/lata-coke.jpg"), 0.2, 3.0, 2.0, 5.0) {}
 
-MaterialTapasLata::MaterialTapasLata() : Material(NULL, 0.2, 1.0, 0.5, 1.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(Tupla3f{0.7,0.7,0.7}, 0.2, 2.0, 2.5, 5.0) {}
 
-MaterialPeonNegro::MaterialPeonNegro() : Material(NULL, 0.0, 0.05, 0.2, 1.0) {}
+MaterialPeonNegro::MaterialPeonNegro() : Material(Tupla3f{0.05,0.05,0.05}, 0.1, 0.1, 0.4, 5.0) {}
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(NULL, 0.6, 0.8, 1.0, 5.0) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(Tupla3f{0.8,0.8,0.8}, 0.1, 0.1, 0.4, 5.0) {}
 
 MaterialPeonMadera::MaterialPeonMadera()
     : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.4, 1.0) {}
