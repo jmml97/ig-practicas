@@ -16,11 +16,11 @@
 using namespace std ;
 
 static constexpr float DELTA = 3.0;
-static constexpr int numObjetos4 = 2;
-static unsigned objetoActivo4 = 0;
-static NodoGrafoEscena * objetos4[numObjetos4] = {nullptr, nullptr};
-static ColeccionFuentesP4 * cf4 = nullptr;
-static unsigned angulo4 = 0;
+static constexpr int NUMERO_OBJETOS_P4 = 1;
+static unsigned objeto_activo_p4 = 0;
+static NodoGrafoEscena* objetos_p4[NUMERO_OBJETOS_P4] = {nullptr};
+static ColeccionFuentesP4* fuentes_luz_p4 = nullptr;
+static unsigned angulo_activo_p4 = 0;
 
 // ---------------------------------------------------------------------
 // Función para implementar en la práctica 4 para inicialización.
@@ -31,8 +31,8 @@ void P4_Inicializar(  )
 {
    cout << "Creando objetos de la práctica 4 .... " << flush ;
 
-   cf4 = new ColeccionFuentesP4;
-   objetos4[0] = new EscenaP4;
+   fuentes_luz_p4 = new ColeccionFuentesP4;
+   objetos_p4[0] = new EscenaP4;
 
    cout << "hecho." << endl << flush ;
 }
@@ -46,34 +46,42 @@ void P4_Inicializar(  )
 //  - devuelve 'false' si la tecla no se usa en esta práctica (no ha
 //    cambiado nada)
 
-bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
-{
-   bool res = false  ; // valor devuelto: es true solo cuando se ha procesado alguna tecla
+bool P4_FGE_PulsarTeclaCaracter(unsigned char tecla) {
+  bool res = false;  // valor devuelto: es true solo cuando se ha procesado
+                     // alguna tecla
+  FuenteDireccional* fuente_direccional =
+      (FuenteDireccional*)fuentes_luz_p4->ptrFuente(0);
 
-   switch ( toupper( tecla ) )
-   {
-      case 'G' :
-         // COMPLETAR: práctica 4: activar el siguiente ángulo (longitud o latitud)
-         // ....
+  switch (toupper(tecla)) {
+    // Iterar entre los ángulos
+    case 'G':
+      angulo_activo_p4 = (angulo_activo_p4 + 1) % 2;
+      res = true;
+      break;
 
-         break ;
+    // Incrementar el ángulo activo
+    case '>':
+      fuente_direccional->variarAngulo(angulo_activo_p4, DELTA);
+      cout << "práctica 4: ángulo " << angulo_activo_p4 << " cambiado a "
+           << (angulo_activo_p4 ? fuente_direccional->latitud
+                                : fuente_direccional->longitud)
+           << endl;
+      res = true;
+      break;
 
-      case '>' :
-         // COMPLETAR: práctica 4: incrementar el ángulo activo
-         // ....
-
-         break ;
-
-      case '<' :
-         // COMPLETAR: práctica 4: decrementar el ángulo activo
-         // ....
-
-         break ;
-      default :
-         break ;
-   }
-   return res ;
-
+    // Decrementar el ángulo activo
+    case '<':
+      fuente_direccional->variarAngulo(angulo_activo_p4, -DELTA);
+      cout << "práctica 4: ángulo " << angulo_activo_p4 << " cambiado a "
+           << (angulo_activo_p4 ? fuente_direccional->latitud
+                                : fuente_direccional->longitud)
+           << endl;
+      res = true;
+      break;
+    default:
+      break;
+  }
+  return res;
 }
 
 // ---------------------------------------------------------------------
@@ -83,8 +91,8 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 
 void P4_DibujarObjetos( ContextoVis & cv )
 {
-   cf4->activar();
-   if (objetos4[objetoActivo4] != nullptr)
-     objetos4[objetoActivo4]->visualizarGL(cv);
+   fuentes_luz_p4->activar();
+   if (objetos_p4[objeto_activo_p4] != nullptr)
+     objetos_p4[objeto_activo_p4]->visualizarGL(cv);
 
 }
