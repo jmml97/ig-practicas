@@ -40,7 +40,6 @@ CamaraInteractiva::CamaraInteractiva( bool examinar_ini, float ratio_yx_vp_ini,
 // ----------------------------------------------------------------------------
 // calcula view-frustum (la matriz de proyección) usando:
 //    perspectiva, dist, ratio_yx_vp
-
 constexpr float n = 0.01 ; // valor 'near' en proy. persp
 
 void CamaraInteractiva::calcularViewfrustum() {
@@ -72,7 +71,6 @@ void CamaraInteractiva::calcularViewfrustum() {
 //-----------------------------------------------------------------------
 // calcula el marco de referencia de la camara (y la matriz de vista), usando:
 //     longi, lati, dist, aten
-
 void CamaraInteractiva::calcularMarcoCamara() {
   // Recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
   //    (1) Matriz = Trasl( aten )*Rotacion( longi, Y )*Rotacion( -lati, X )*
@@ -95,7 +93,6 @@ void CamaraInteractiva::calcularMarcoCamara() {
 //-----------------------------------------------------------------------
 // actualiza las matrices que hay en 'cam.mcv'
 // a patir de 'cam.mcv.org' y 'cam.mcv.ejes'
-
 void CamaraInteractiva::recalcularMatrMCV() {
   // Recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
   // en 'mcv' usando 'mcv.eje[X/Y/Z]' y 'mcv.org'
@@ -109,7 +106,6 @@ void CamaraInteractiva::recalcularMatrMCV() {
 
 // -----------------------------------------------------------------------------
 // desplazar o rotar la cámara en horizontal/vertical
-
 constexpr float urot = 1,  // unidad de rotación (1 grado)
     udesp = 0.01;          // unidad de desplazamiento
 
@@ -132,9 +128,9 @@ void CamaraInteractiva::moverHV(float nh, float nv) {
     recalcularMatrMCV();
   }
 }
+
 // -----------------------------------------------------------------------------
 // desplazar en el eje Z de la cámara (hacia adelante o hacia detrás)
-
 constexpr float dmin = 2.0 * n,  // distancia minima (2*near)
     porc = 2;                    // porcentaje de cambio (1%)
 
@@ -164,27 +160,23 @@ void CamaraInteractiva::desplaZ(float nz) {
 
 // -----------------------------------------------------------------------------
 // fija punt. aten. y activa modo examinar
-void CamaraInteractiva::modoExaminar( const Tupla3f & pAten )
-{
-   // COMPLETAR: práctica 5: fija punt. aten. y activa modo examinar, recalcula marco de camara
-   // .....
-
+void CamaraInteractiva::modoExaminar(const Tupla3f& pAten) {
+  // Fija punt. aten. y activa modo examinar, recalcula marco de cámara.
+  examinar = true;
+  aten = pAten;
+  calcularMarcoCamara();
 }
+
 // -----------------------------------------------------------------------------
 // pasa a modo examinar (mantiene p.aten.)
-
-void CamaraInteractiva::modoExaminar()
-{
-   // COMPLETAR: práctica 5: activa modo examinar (no es necesario recalcular el marco de cámara)
-   // .....
-
+void CamaraInteractiva::modoExaminar() {
+  // Activa modo examinar (no es necesario recalcular el marco de cámara).
+  examinar = true;
 }
+
 // -----------------------------------------------------------------------------
 // pasa al modo primera persona
-
-void CamaraInteractiva::modoPrimeraPersona()
-{
-   // COMPLETAR: práctica 5: activa modo primera persona (no es necesario recalcular el marco de cámara)
-   // .....
-
+void CamaraInteractiva::modoPrimeraPersona() {
+  // Activa modo primera persona (no es necesario recalcular el marco de cámara)
+  examinar = false;
 }
