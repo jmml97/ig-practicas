@@ -1,6 +1,8 @@
 #include <aux.hpp>
 #include "CamaraInter.hpp"
 
+using namespace std ;
+
 
 // -----------------------------------------------------------------------------
 // constructor de cámaras interactivas, los parámetros son:
@@ -41,57 +43,64 @@ CamaraInteractiva::CamaraInteractiva( bool examinar_ini, float ratio_yx_vp_ini,
 
 constexpr float n = 0.01 ; // valor 'near' en proy. persp
 
+void CamaraInteractiva::calcularViewfrustum() {
+  float aspect_ratio = (float)1 / ratio_yx_vp;
+  if (perspectiva) {
+    // calcular los parámetros del view frustum (vf), y
+    // actualiza la matriz de proyección (vf.matrizProy) caso perspectiva: usar
+    // hfov_grad, n, ratio_yx_vp, dist, función MAT_Frustum
+    vf = ViewFrustum(hfov_grad, aspect_ratio, n, dist + 200);
+  } else {
+    // calcular los parámetros del view frustum (vf), y
+    // actualiza la matriz de proyección (vf.matrizProy) caso ortográfica: usar
+    // ratio_yx_vp, dist, función MAT_Ortografica
+    aspect_ratio = ratio_yx_vp;
 
-void CamaraInteractiva::calcularViewfrustum(  )
-{
-   using namespace std ;
+    vf.persp = false;
+    vf.left = -dist * aspect_ratio;
+    vf.right = dist * aspect_ratio;
+    vf.top = dist;
+    vf.bottom = -dist;
+    vf.near = n;
+    vf.far = dist + 200;
 
-
-   if ( perspectiva )
-   {
-      // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
-      // caso perspectiva: usar hfov_grad, n, ratio_yx_vp, dist, función MAT_Frustum
-      // .....
-
-   }
-   else
-   {
-      // COMPLETAR: práctica 5: calcular los parámetros del view frustum (vf), y actualiza la matriz de proyección (vf.matrizProy)
-      // caso ortográfica: usar ratio_yx_vp, dist, función MAT_Ortografica
-      // .....
-
-   }
-
+    vf.matrizProy =
+        MAT_Ortografica(vf.left, vf.right, vf.bottom, vf.top, vf.near, vf.far);
+  }
 }
 
 //-----------------------------------------------------------------------
 // calcula el marco de referencia de la camara (y la matriz de vista), usando:
 //     longi, lati, dist, aten
 
-void CamaraInteractiva::calcularMarcoCamara()
-{
+void CamaraInteractiva::calcularMarcoCamara() {
+  // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
+  //    (1) Matriz = Trasl( aten )*Rotacion( longi, Y )*Rotacion( -lati, X )*
+  //    Traslacion( (0,0,dist) ) (2) ejes mcv = ejes mcv * matriz (3) recalcular
+  //    matrices marco camara
 
-   // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
-   //    (1) Matriz = Trasl( aten )*Rotacion( longi, Y )*Rotacion( -lati, X )* Traslacion( (0,0,dist) )
-   //    (2) ejes mcv = ejes mcv * matriz
-   //    (3) recalcular matrices marco camara
-   // .....
+  Matriz4f m = MAT_Traslacion(aten) * MAT_Rotacion(longi, 0, 1, 0) *
+               MAT_Rotacion(-lati, 1, 0, 0) * MAT_Traslacion(0, 0, dist);
 
+  mcv.eje[0] = m * Tupla4f(1, 0, 0, 0);
+  mcv.eje[1] = m * Tupla4f(0, 1, 0, 0);
+  mcv.eje[2] = m * Tupla4f(0, 0, 1, 0);
+  // Origen
+  mcv.org = m * Tupla4f(0, 0, 0, 1);
 
+  recalcularMatrMCV();
 }
-
 
 //-----------------------------------------------------------------------
 // actualiza las matrices que hay en 'cam.mcv'
 // a patir de 'cam.mcv.org' y 'cam.mcv.ejes'
 
-void CamaraInteractiva::recalcularMatrMCV()
-{
-   // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv' en 'mcv' usando 'mcv.eje[X/Y/Z]' y 'mcv.org'
-   // .....
-
+void CamaraInteractiva::recalcularMatrMCV() {
+  // Recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
+  // en 'mcv' usando 'mcv.eje[X/Y/Z]' y 'mcv.org'
+  mcv.matrizVista = MAT_Vista(mcv.eje, mcv.org);
+  mcv.matrizVistaInv = MAT_Vista_inv(mcv.eje, mcv.org);
 }
-
 
 // -----------------------------------------------------------------------------
 //  métodos para manipular (desplazar o rotar) la cámara
