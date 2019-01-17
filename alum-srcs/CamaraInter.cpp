@@ -74,10 +74,11 @@ void CamaraInteractiva::calcularViewfrustum() {
 //     longi, lati, dist, aten
 
 void CamaraInteractiva::calcularMarcoCamara() {
-  // COMPLETAR: práctica 5: recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
+  // Recalcular 'mcv.matrizVista' y 'mcv.matriVistaInv'
   //    (1) Matriz = Trasl( aten )*Rotacion( longi, Y )*Rotacion( -lati, X )*
-  //    Traslacion( (0,0,dist) ) (2) ejes mcv = ejes mcv * matriz (3) recalcular
-  //    matrices marco camara
+  //    Traslacion( (0,0,dist) )
+  //    (2) ejes mcv = ejes mcv * matriz
+  //    (3) recalcular matrices marco camara
 
   Matriz4f m = MAT_Traslacion(aten) * MAT_Rotacion(longi, 0, 1, 0) *
                MAT_Rotacion(-lati, 1, 0, 0) * MAT_Traslacion(0, 0, dist);
@@ -109,50 +110,49 @@ void CamaraInteractiva::recalcularMatrMCV() {
 // -----------------------------------------------------------------------------
 // desplazar o rotar la cámara en horizontal/vertical
 
-constexpr float urot  = 1,    // unidad de rotación (1 grado)
-                udesp = 0.01 ;  // unidad de desplazamiento
+constexpr float urot = 1,  // unidad de rotación (1 grado)
+    udesp = 0.01;          // unidad de desplazamiento
 
-void CamaraInteractiva::moverHV( float nh, float nv )
-{
-   using namespace std ;
-   if ( examinar ) // examinar
-   {
-      // COMPLETAR: práctica 5: actualizar 'longi' y 'lati' y recalcular marco de cámara
-      // .....
+void CamaraInteractiva::moverHV(float nh, float nv) {
+  if (examinar) {
+    // Modo examinar.
+    // Actualizar 'longi' y 'lati' y recalcular marco de cámara.
+    longi += nh;
+    lati += nv;
+    calcularMarcoCamara();
+  } else {
+    // Modo primera persona.
+    // Desplazar 'mcv.org' en X e Y y recalcular la matriz de vista (y
+    // movimiento solidario del punto de atención)
+    mcv.org(X) += nh * udesp;
+    mcv.org(Y) += nv * udesp;
 
-   }
-   else // primer persona
-   {
-      // COMPLETAR: práctica 5: desplazar 'mcv.org' en X e Y y recalcular la matriz de vista
-      // (y movimiento solidario del punto de atención)
-      // .....
-
-   }
+    aten(X) += nh * udesp;
+    aten(Y) += nv * udesp;
+    recalcularMatrMCV();
+  }
 }
 // -----------------------------------------------------------------------------
 // desplazar en el eje Z de la cámara (hacia adelante o hacia detrás)
 
-constexpr float dmin = 2.0*n,  // distancia minima (2*near)
-                porc = 2 ; // porcentaje de cambio (1%)
+constexpr float dmin = 2.0 * n,  // distancia minima (2*near)
+    porc = 2;                    // porcentaje de cambio (1%)
 
-void CamaraInteractiva::desplaZ( float nz )
-{
-   using namespace std ;
-
-   if ( examinar ) // examinar
-   {
-      // COMPLETAR: práctica 5: actualizar 'dist' usando 'nz', 'dmin' y 'porc' y recalcular marco de cámara
-      // .....
-
-   }
-   else // primer persona
-   {
-      // COMPLETAR: práctica 5: desplazar 'mcv.org' en Z, y recalcular la matriz de vista
-      // (y movimiento solidario del punto de atención)
-      // .....
-
-   }
-
+void CamaraInteractiva::desplaZ(float nz) {
+  if (examinar) {
+    // Modo examinar.
+    // Actualizar 'dist' usando 'nz', 'dmin' y 'porc' y recalcular marco de
+    // cámara.
+    dist = dmin + (dist - dmin) * (1.0 - nz * porc / 100.0);
+    calcularMarcoCamara();
+  } else {
+    // Modo primera persona.
+    // Desplazar 'mcv.org' en Z, y recalcular la matriz de vista (y movimiento
+    // solidario del punto de atención).
+    mcv.org(Z) -= nz * udesp;
+    aten(Z) -= nz * udesp;
+    recalcularMatrMCV();
+  }
 }
 // -----------------------------------------------------------------------------
 
