@@ -51,28 +51,25 @@ MarcoCoorVista::MarcoCoorVista()
 // ---------------------------------------------------------------------
 
 // constructor: mismos parámetros que {\ttbf gluLookAt} )
-MarcoCoorVista::MarcoCoorVista( const Tupla3f & pfoco, const Tupla3f & paten,
-                                const Tupla3f & pvup )
-{
-   const Tupla3f vpn      = pfoco-paten ;
-   const float   vpn_lsq  = vpn.lengthSq(),
-                 vup_lsq  = pvup.lengthSq();
-   const Tupla3f ejex     = pvup.cross( vpn );
-   const float   ejex_lsq = ejex.lengthSq();
+MarcoCoorVista::MarcoCoorVista(const Tupla3f& pfoco, const Tupla3f& paten,
+                               const Tupla3f& pvup) {
+  const Tupla3f vpn = pfoco - paten;
+  const float vpn_lsq = vpn.lengthSq(), vup_lsq = pvup.lengthSq();
+  const Tupla3f ejex = pvup.cross(vpn);
+  const float ejex_lsq = ejex.lengthSq();
 
-   assert( epsilon < vpn_lsq );
-   assert( epsilon < vup_lsq );
-   assert( epsilon < ejex_lsq );
+  assert(epsilon < vpn_lsq);
+  assert(epsilon < vup_lsq);
+  assert(epsilon < ejex_lsq);
 
-   eje[X] = ejex/sqrt( ejex_lsq );
-   eje[Z] = vpn/sqrt( vpn_lsq );
-   eje[Y] = eje[Z].cross( eje[X] );
-   org    = pfoco ;
+  eje[X] = ejex / sqrt(ejex_lsq);
+  eje[Z] = vpn / sqrt(vpn_lsq);
+  eje[Y] = eje[Z].cross(eje[X]);
+  org = pfoco;
 
-   matrizVista = MAT_Vista( eje, org ) ;
-   matrizVistaInv = MAT_Vista_inv( eje, org );
+  matrizVista = MAT_Vista(eje, org);
+  matrizVistaInv = MAT_Vista_inv(eje, org);
 }
-
 
 // *********************************************************************
 // clase: ViewFrustum
