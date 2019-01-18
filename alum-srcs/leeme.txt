@@ -1,0 +1,1 @@
+- Se ha añadido un método fijarGlViewport() a la clase Viewport.
