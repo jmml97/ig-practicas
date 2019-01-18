@@ -11,6 +11,7 @@
 #include "practica5.hpp"
 
 #include "CamaraInter.hpp"
+#include "grafo-escena.hpp"
 
 using namespace std ;
 
@@ -19,10 +20,26 @@ using namespace std ;
 //      que sirven para gestionar el modo arrastrar)
 // ......
 
+// número de cámaras
+static constexpr int numero_camaras = 4;
+// vector de cámaras con vista como mínimo de alzado, planta y perfil
+static CamaraInteractiva* camaras[numero_camaras] = {nullptr, nullptr, nullptr,
+                                                     nullptr};
+static int camara_activa = 0;   
+
+// viewport actual (se recalcula al inicializar y al fijar las matrices)
+static Viewport viewport;
+
 // viewport actual (se recalcula al inicializar y al fijar las matrices)
 Viewport viewport ;
 // true si se está en modo arrastrar, false si no
 static bool modo_arrastrar = false ;
+
+// grafo de escena
+static constexpr int NUMERO_OBJETOS_P5 = 1;
+static unsigned objeto_activo_p5 = 0;
+static NodoGrafoEscena* objetos_p5[NUMERO_OBJETOS_P5] = {nullptr};
+static ColeccionFuentesP4* fuentes_luz_p5 = nullptr;
 
 
 // ---------------------------------------------------------------------
@@ -37,23 +54,26 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
 }
 // ---------------------------------------------------------------------
 
-void P5_FijarMVPOpenGL( int vp_ancho, int vp_alto )
-{
-   // COMPLETAR: práctica 5: actualizar viewport, actualizar y activar la camara actual
-   //     (en base a las dimensiones del viewport)
-   // .......
+void P5_FijarMVPOpenGL(int vp_ancho, int vp_alto) {
+  // Actualizar viewport, actualizar y activar la camara actual (en base a las
+  // dimensiones del viewport)
 
+  viewport = Viewport(0, 0, vp_ancho, vp_alto);
+  viewport.fijarGlViewport();
 
+  camaras[camara_activa]->ratio_yx_vp = viewport.ratio_yx;
+  camaras[camara_activa]->calcularViewfrustum();  // recalcular m_proy
+  camaras[camara_activa]->activar();
 }
 // ---------------------------------------------------------------------
 
-void P5_DibujarObjetos( ContextoVis & cv )
-{
-
-   // COMPLETAR: práctica 5: activar las fuentes de luz y visualizar la escena
-   //      (se supone que la camara actual ya está activada)
-   // .......
-
+void P5_DibujarObjetos(ContextoVis& cv) {
+  // Activar las fuentes de luz y visualizar la escena (se supone que la camara
+  // actual ya está activada)
+  fuentes_luz_p5->activar();
+  if (objetos_p5[objeto_activo_p5] != nullptr) {
+    objetos_p5[objeto_activo_p5]->visualizarGL(cv);
+  }
 }
 
 // ---------------------------------------------------------------------
