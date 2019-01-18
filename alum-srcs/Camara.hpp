@@ -78,6 +78,8 @@ class Viewport {
   // constructor
   Viewport();  // crea viewport de 512 x 512 con origen en (0,0)
   Viewport(int p_org_x, int p_org_y, int p_ancho, int p_alto);
+
+  void fijarGlViewport();
 };
 
 // *********************************************************************

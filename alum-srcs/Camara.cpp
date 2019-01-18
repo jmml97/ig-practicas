@@ -176,4 +176,8 @@ Viewport::Viewport( int p_org_x, int p_org_y, int p_ancho, int p_alto )
    matrizVp    = MAT_Viewport( org_x, org_y, ancho, alto );
    matrizVpInv = MAT_Viewport_inv( org_x, org_y, ancho, alto );
 }
+
+// ---------------------------------------------------------------------
+
+void Viewport::fijarGlViewport() { glViewport(org_x, org_y, ancho, alto); }
 // *********************************************************************
