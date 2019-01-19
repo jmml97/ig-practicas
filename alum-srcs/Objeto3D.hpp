@@ -23,8 +23,6 @@ class Objeto3D
                                    // 0: no tiene identificador, -1: identificador del padre,
                                    // >0: tiene este identificador
 
-      bool centro_calculado;
-
      public:
       // pone el identificador a '0', siempre
       Objeto3D() ;
@@ -76,6 +74,7 @@ class Objeto3D
 
       virtual void fijarColorNodo(const Tupla3f& color);
 
+      bool centro_calculado;
 } ;
 
 
