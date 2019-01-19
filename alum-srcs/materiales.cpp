@@ -87,6 +87,14 @@ void Textura::enviar() {
     glTexGenfv(GL_T, GL_EYE_PLANE, coefs_t);
   }
 
+  /* The glGenTextures function generates texture names. The generated textures
+   * assume the dimensionality of the texture target to which they are first
+   * bound with the glBindTexture function. */
+  glGenTextures(1, &ident_textura);
+
+  /* The glBindTexture function enables the creation of a named texture that is
+   * bound to a texture target. When a texture is bound to a target, the
+   * previous binding for that target is no longer in effect. */
   glBindTexture(GL_TEXTURE_2D, ident_textura);
 
   gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, (GLsizei)imagen->tamX(),
