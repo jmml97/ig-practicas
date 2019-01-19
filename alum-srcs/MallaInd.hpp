@@ -11,6 +11,9 @@
 #include <vector>  // usar std::vector
 
 #include "Objeto3D.hpp"  // declaración de 'Objeto3D'
+
+Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices) {};
+
 // ---------------------------------------------------------------------
 // clase para objetos gráficos genéricos
 
@@ -53,6 +56,10 @@ class MallaInd : public Objeto3D {
   virtual void visualizarGL(ContextoVis& cv);
 
   void fijarColorNodo(const Tupla3f& color);
+
+  // Si 'centro_calculado' es 'false', recalcula el centro del objeto, el
+  // punto medio de la caja englobante.
+  virtual void calcularCentroOC();
 };
 // ---------------------------------------------------------------------
 

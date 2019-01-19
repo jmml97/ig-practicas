@@ -9,6 +9,8 @@
 #include <aux.hpp>
 #include <tuplasg.hpp>
 
+#include <algorithm>  // usar std::algorithm
+
 // *****************************************************************************
 // Funciones auxiliares
 
@@ -41,6 +43,20 @@ GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid* puntero) {
   glBindBuffer(tipo, 0);
 
   return id_VBO;
+}
+
+Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices) {
+  Tupla3f maximo,
+      minimo = p_vertices[0];  // vértices diagonalmente opuestos
+
+  for (auto vertice : p_vertices) {
+    maximo = {std::max(vertice(X), maximo(X)), std::max(vertice(Y), maximo(Y)),
+              std::max(vertice(Z), maximo(Z))};
+    minimo = {std::min(vertice(X), minimo(X)), std::min(vertice(Y), minimo(Y)),
+              std::min(vertice(Z), minimo(Z))};
+  }
+
+  return ((maximo + minimo) / 2);
 }
 
 // *****************************************************************************
@@ -264,7 +280,7 @@ void MallaInd::visualizarDE_MISombreadoPlano(ContextoVis& cv) {
   glEnd();
 }
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 void MallaInd::visualizarGL(ContextoVis& cv) {
   usar_texturas =
@@ -317,9 +333,21 @@ void MallaInd::fijarColorNodo(const Tupla3f& color) {
     colores.push_back(color);
   }
 }
-// *****************************************************************************
 
-// *****************************************************************************
+// ---------------------------------------------------------------------------
+
+// Si 'centro_calculado' es 'false', recalcula el centro del objeto, el
+// punto medio de la caja englobante.
+void MallaInd::calcularCentroOC() {
+  if (!centro_calculado) {
+    ponerCentroOC(calcularCentroCE(coordenadas_vertices));
+    centro_calculado = true;
+  }
+}
+
+// ***************************************************************************
+
+// ***************************************************************************
 
 Cubo::Cubo() : MallaInd("malla cubo") {
   coordenadas_vertices = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
