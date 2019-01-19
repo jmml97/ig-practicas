@@ -160,13 +160,28 @@ Matriz4f* NodoGrafoEscena::leerPtrMatriz(unsigned indice) {
 }
 
 // -----------------------------------------------------------------------------
-// si 'centro_calculado' es 'false', recalcula el centro usando los centros
-// de los hijos (el punto medio de la caja englobante de los centros de hijos)
+// Si 'centro_calculado' es 'false', recalcula el centro usando los centros
+// de los hijos (el punto medio de la caja englobante de los centros de hijos).
 void NodoGrafoEscena::calcularCentroOC() {
-  // COMPLETAR: práctica 5: calcular y guardar el centro del nodo
-  //    en coordenadas de objeto (hay que hacerlo recursivamente)
-  //   (si el centro ya ha sido calculado, no volver a hacerlo)
-  // ........
+  if (!centro_calculado) {
+    Matriz4f matriz_modelado = MAT_Ident();
+    vector<Tupla3f> centros_hijos;
+
+    // Tenemos que ir acumulando las transformaciones del grafo de escena en la
+    // matriz de modelado para  calcular correctamente los centros en
+    // coordenadas de objeto.
+    for (auto& entrada : entradas) {
+      if (entrada.tipo == TipoEntNGE::objeto) {
+        entrada.objeto->calcularCentroOC();
+        centros_hijos.push_back(matriz_modelado *
+                                entrada.objeto->leerCentroOC());
+      } else if (entrada.tipo == TipoEntNGE::transformacion)
+        matriz_modelado = matriz_modelado * (*entrada.matriz);
+    }
+
+    ponerCentroOC(calcularCentroCE(centros_hijos));
+    centro_calculado = true;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -178,8 +193,31 @@ bool NodoGrafoEscena::buscarObjeto(
     Objeto3D** objeto,          // (salida) puntero al puntero al objeto
     Tupla3f& centro_wc  // (salida) centro del objeto en coordenadas del mundo
 ) {
-  // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
-  // ........
+  assert(0 < ident_busc);
+
+  // no calculamos los centros de objetos no seleccionables
+  if (leerIdentificador() > 0 && !centro_calculado) {
+    calcularCentroOC();
+  }
+
+  if (leerIdentificador() == ident_busc) {
+    centro_wc = mmodelado * leerCentroOC();
+    *objeto = this;
+    return true;
+  } else {
+    bool encontrado = false;
+    Matriz4f nueva_mmodelado = mmodelado;
+
+    for (unsigned i = 0; i < entradas.size() && !encontrado; i++) {
+      if (entradas[i].tipo == TipoEntNGE::transformacion) {
+        nueva_mmodelado = nueva_mmodelado * (*entradas[i].matriz);
+      } else if (entradas[i].tipo == TipoEntNGE::objeto) {
+        encontrado = entradas[i].objeto->buscarObjeto(
+            ident_busc, nueva_mmodelado, objeto, centro_wc);
+      }
+    }
+    return encontrado;
+  }
 }
 
 // *****************************************************************************
