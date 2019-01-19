@@ -24,13 +24,13 @@ static constexpr int NUMERO_CAMARAS = 4;
 // vector de cámaras con vista como mínimo de alzado, planta y perfil.
 static CamaraInteractiva* camaras[NUMERO_CAMARAS] = {nullptr, nullptr, nullptr,
                                                      nullptr};
-static int camara_activa = 0;   
+static int camara_activa = 0;
 
 // viewport actual (se recalcula al inicializar y al fijar las matrices).
 static Viewport viewport;
 
 // true si se está en modo arrastrar, false si no.
-static bool modo_arrastrar = false ;
+static bool modo_arrastrar = false;
 
 // grafo de escena.
 static constexpr int NUMERO_OBJETOS_P5 = 1;
@@ -114,10 +114,10 @@ bool P5_FGE_PulsarTeclaCaracter(unsigned char tecla) {
         camaras[camara_activa]->modoPrimeraPersona();
       } else {
         camaras[camara_activa]->modoExaminar();
-        cout << "práctica 5: el modo de la cámara " << camara_activa
-             << " ha cambiado a " << (examinar ? "primera persona" : "examinar")
-             << endl;
       }
+      cout << "práctica 5: el modo de la cámara " << camara_activa
+           << " ha cambiado a " << (examinar ? "primera persona" : "examinar")
+           << endl;
       break;
 
     case '-':
