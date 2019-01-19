@@ -260,18 +260,25 @@ bool P5_FGE_Scroll(int direction) {
 }
 // ---------------------------------------------------------------------
 
-void FijarColorIdent( const int ident )  // 0 ≤ ident < 2^24
-{
-   // COMPLETAR: práctica 5: fijar color actual de OpenGL usando 'ident' (glColor3ub)
-   // .....
+// 0 ≤ ident < 2^24
+void FijarColorIdent(const int ident) {
+  // Fijar color actual de OpenGL usando 'ident' (glColor3ub).
+  if (ident >= 0) {
+    const unsigned char byte_R = ident % 0x100U,
+                        byte_G = (ident / 0x100U) % 0x100U,
+                        byte_B = (ident / 0x10000U) % 0x100U;
 
+    glColor3ub(byte_R, byte_G, byte_B);
+  }
 }
 //---------------
 
-int LeerIdentEnPixel( int xpix, int ypix )
-{
-   // COMPLETAR: práctica 5: leer el identificador codificado en el color del pixel (x,y)
-   // .....
-
+int LeerIdentEnPixel(int xpix, int ypix) {
+  // Leer el identificador codificado en el color del píxel (x,y).
+  unsigned char bytes[3];
+  // Leer los 3 bytes del framebuffer (píxel = 1×1).
+  glReadPixels(xpix, ypix, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, (void*)bytes);
+  // Reconstruir el indentificador y devolverlo.
+  return bytes[0] + (0x100U * bytes[1]) + (0x10000U * bytes[2]);
 }
 //---------------
