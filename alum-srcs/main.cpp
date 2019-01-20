@@ -601,8 +601,8 @@ void Inicializa_GLFW( int argc, char * argv[] )
 
 void Inicializa_Vars() {
   // inicializar práctica actual
-  practicaActual = 4;
-  contextoVis.modoVis = modoAlambre;
+  practicaActual = 5;
+  contextoVis.modoVis = modoSombreadoSuave;
 }
 
 // ---------------------------------------------------------------------
