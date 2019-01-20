@@ -174,24 +174,43 @@ bool P5_FGE_PulsarTeclaEspecial(int tecla) {
 // ---------------------------------------------------------------------
 // se llama al hacer click con el botón izquierdo
 
-void P5_ClickIzquierdo( int x, int y )
-{
+void P5_ClickIzquierdo(int x, int y) {
+  // Visualizar escena en modo selección y leer el color del píxel en (x,y).
 
-   // COMPLETAR: práctica 5: visualizar escena en modo selección y leer el color del pixel en (x,y)
+  ContextoVis cv;
+  cv.modoSeleccionFBO = true;
 
+  glClearColor(0, 0, 0, 1);                            // color de fondo
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // limpiar pantalla
 
-   // 1. crear un 'contextovis' apropiado
-   // .....
+  objetos_p5[objeto_activo_p5]->visualizarGL(cv);
 
-   // 2. visualizar en modo selección (sobre el backbuffer)
-   // ....
+  unsigned identificador = LeerIdentEnPixel(x, y);
 
-   // 3. leer el color del pixel, si es 0 no se hace nada
-   // .....
+  cout << "práctica 5 (DEBUG), x: " << x << " y: " << y << endl;
+  cout << "práctica 5 (DEBUG), identificador: " << identificador << endl;
 
-   // 4. buscar el objeto en el grafo de escena e informar del mismo
-   // .....
+  // Si el color del píxel es 0 es porque no hay ningún objeto en el lugar en el
+  // que se ha hecho click.
+  if (identificador == 0) {
+    cout << "práctica 5: no se ha seleccionado ningún objeto" << endl;
+    return;
+  }
 
+  // Si dicho color no es 0, buscamos el objeto y ponemos la cámara en el modo
+  // examinar.
+  Tupla3f centro_wc(0.0, 0.0,
+                    0.0);  // Centro del objeto en coordenadas de mundo.
+  Matriz4f m = MAT_Ident();
+  Objeto3D* objeto = nullptr;
+
+  if (objetos_p5[0]->buscarObjeto(identificador, m, &objeto, centro_wc)) {
+    camaras[camara_activa]->modoExaminar(centro_wc);
+    cout << "práctica 5: seleccionado objeto " << objeto->leerNombre()
+         << " con centro " << centro_wc << endl;
+  } else {
+    cout << "práctica 5: no se ha encontrado el objeto seleccionado" << endl;
+  }
 }
 // ---------------------------------------------------------------------
 // se llama al mover el botón en modo arrastrar
@@ -279,6 +298,7 @@ int LeerIdentEnPixel(int xpix, int ypix) {
   // Leer los 3 bytes del framebuffer (píxel = 1×1).
   glReadPixels(xpix, ypix, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, (void*)bytes);
   // Reconstruir el indentificador y devolverlo.
-  return bytes[0] + (0x100U * bytes[1]) + (0x10000U * bytes[2]);
+  int identificador = bytes[0] + (0x100U * bytes[1]) + (0x10000U * bytes[2]);
+  return identificador;
 }
 //---------------
