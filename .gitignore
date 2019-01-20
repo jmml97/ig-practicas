@@ -10,3 +10,6 @@ objs
 plys
 srcs
 .DS_Store
+ig.p.ws.code-workspace
+.clang-format
+.vscode
