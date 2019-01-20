@@ -217,12 +217,12 @@ void MallaInd::visualizarDE_VBOs(ContextoVis& cv) {
     /* asociado a un contexto, que especifica el comportamiento de este */
     /* objeto                                                           */
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO_normales);
-    glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
+    glNormalPointer(GL_FLOAT, 0, 0);
     glEnableClientState(GL_NORMAL_ARRAY);
 
     if (coordenadas_texturas.size() > 0) {
       glBindBuffer(GL_ARRAY_BUFFER, id_VBO_texturas);
-      glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
+      glTexCoordPointer(2, GL_FLOAT, 0, 0);
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
   } else if (colores.size() > 0) {  // Colores (puede que el objeto no esté
