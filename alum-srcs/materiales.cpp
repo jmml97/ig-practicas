@@ -313,6 +313,9 @@ void Material::activar() {
     glMaterialfv(GL_BACK, GL_DIFFUSE, tra.difusa);       // M_D
     glMaterialfv(GL_BACK, GL_SPECULAR, tra.especular);   // M_S
     glMaterialf(GL_BACK, GL_SHININESS, tra.exp_brillo);  // e
+
+    glEnable(GL_LIGHTING);
+    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
   } else {
     glDisable(GL_LIGHTING);
     glColor4fv(color);
@@ -470,6 +473,7 @@ void ColFuentesLuz::insertar(FuenteLuz* pf)  // inserta una nueva
 // activa una colección de fuentes de luz
 void ColFuentesLuz::activar() {
   glEnable(GL_LIGHTING);
+  glEnable(GL_NORMALIZE);
 
   for (unsigned i = 0; i < vpf.size(); i++) vpf[i]->activar();
 
@@ -497,13 +501,13 @@ ColFuentesLuz::~ColFuentesLuz() {
 //******************************************************************************
 
 MaterialLata::MaterialLata()
-    : Material(new Textura("../imgs/lata-coke.jpg"), 0.2, 3.0, 2.0, 5.0) {}
+    : Material(new Textura("../imgs/lata-coke.jpg"), 0.5, 0.3, 0.2, 5.0) {}
 
-MaterialTapasLata::MaterialTapasLata() : Material(Tupla3f{0.7,0.7,0.7}, 0.2, 2.0, 2.5, 5.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(Tupla3f{0.7,0.7,0.7}, 0.5, 0.2, 0.3, 5.0) {}
 
-MaterialPeonNegro::MaterialPeonNegro() : Material(Tupla3f{0.05,0.05,0.05}, 0.1, 0.1, 0.4, 5.0) {}
+MaterialPeonNegro::MaterialPeonNegro() : Material(Tupla3f{0.3,0.3,0.3}, 0.0, 0.1, 0.9, 5.0) {}
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(Tupla3f{0.8,0.8,0.8}, 0.1, 0.1, 0.4, 5.0) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(Tupla3f{1.0,1.0,1.0}, 0.85, 0.075, 0.075, 5.0) {}
 
 MaterialPeonMadera::MaterialPeonMadera()
     : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.4, 1.0) {}
