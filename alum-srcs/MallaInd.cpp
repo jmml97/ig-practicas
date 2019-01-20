@@ -46,8 +46,8 @@ GLuint crearVBO(GLuint tipo, GLuint tam, GLvoid* puntero) {
 }
 
 Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices) {
-  Tupla3f maximo,
-      minimo = p_vertices[0];  // vértices diagonalmente opuestos
+  Tupla3f maximo = p_vertices[0],
+          minimo = p_vertices[0];  // vértices diagonalmente opuestos
 
   for (auto vertice : p_vertices) {
     maximo = {std::max(vertice(X), maximo(X)), std::max(vertice(Y), maximo(Y)),
@@ -56,7 +56,8 @@ Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices) {
               std::min(vertice(Z), minimo(Z))};
   }
 
-  return ((maximo + minimo) / 2);
+  Tupla3f centro = (maximo + minimo) / 2.0; 
+  return centro;
 }
 
 // *****************************************************************************
@@ -155,12 +156,6 @@ void MallaInd::inicializarVBOs() {
 // -----------------------------------------------------------------------------
 
 void MallaInd::visualizarDE_MI(ContextoVis& cv) {
-  /* void glEnableClientState(GLenum cap)                                     */
-  /* Permite activar las funcionalidades 'cap' en el cliente.                 */
-  /* GL_VERTEX_ARRAY: Si está activada, el array de vértices está activado    */
-  /* para la escritura y usado durante el renderizado.                        */
-  glEnableClientState(GL_VERTEX_ARRAY);
-
   if (usar_texturas) {
     glEnableClientState(GL_NORMAL_ARRAY);
     glNormalPointer(GL_FLOAT, 0, normales_vertices.data());
@@ -169,10 +164,16 @@ void MallaInd::visualizarDE_MI(ContextoVis& cv) {
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glTexCoordPointer(2, GL_FLOAT, 0, coordenadas_texturas.data());
     }
-  } else if (colores.size() > 0) {
+  } else if (colores.size() > 0 && !cv.modoSeleccionFBO) {
     glColorPointer(3, GL_FLOAT, 0, colores.data());
     glEnableClientState(GL_COLOR_ARRAY);
   }
+
+  /* void glEnableClientState(GLenum cap)                                     */
+  /* Permite activar las funcionalidades 'cap' en el cliente.                 */
+  /* GL_VERTEX_ARRAY: Si está activada, el array de vértices está activado    */
+  /* para la escritura y usado durante el renderizado.                        */
+  glEnableClientState(GL_VERTEX_ARRAY);
 
   /* void glVertexPointer(GLint size, GLenum type, GLsizei stride,            */
   /*                      const GLvoid* pointer)                              */
@@ -288,10 +289,18 @@ void MallaInd::visualizarGL(ContextoVis& cv) {
 
   if (!usar_texturas) {
     glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
   } else if (normales_vertices.size() == 0) {
     calcular_normales();
   }
-  
+
+  // Modo de selección
+  if (cv.modoSeleccionFBO) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_FLAT);
+    visualizarDE_MI(cv);
+    return;
+  }
 
   /* Cambiamos el modo de visualización según lo indicado en 'cv' */
   switch (cv.modoVis) {

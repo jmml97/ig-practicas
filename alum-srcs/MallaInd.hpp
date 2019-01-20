@@ -12,7 +12,7 @@
 
 #include "Objeto3D.hpp"  // declaración de 'Objeto3D'
 
-Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices) {};
+Tupla3f calcularCentroCE(const std::vector<Tupla3f>& p_vertices);
 
 // ---------------------------------------------------------------------
 // clase para objetos gráficos genéricos
