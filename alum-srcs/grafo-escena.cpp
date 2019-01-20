@@ -76,6 +76,9 @@ EntradaNGE::~EntradaNGE() {
 // los objetos hijos del padre, a la vez que va añadiendo las matrices de
 // transformación del grafo de escena
 void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
+
+  bool hay_iluminacion = cv.modoVis == modoSombreadoPlano || cv.modoVis == modoSombreadoSuave;
+
   cv.pilaMateriales.push();
 
   /* void glMatrixMode(GLenum mode);                                  */
@@ -89,12 +92,15 @@ void NodoGrafoEscena::visualizarGL(ContextoVis& cv) {
 
   for (auto entrada : entradas) {
     if (entrada.tipo == TipoEntNGE::objeto) {
+      if (cv.modoSeleccionFBO && leerIdentificador() >= 0) {
+        int identificador = leerIdentificador();
+        FijarColorIdent(identificador);
+      }
       entrada.objeto->visualizarGL(cv);
-    } else if (entrada.tipo == TipoEntNGE::material) {
+    } else if (entrada.tipo == TipoEntNGE::material && hay_iluminacion) {
       cv.pilaMateriales.activarMaterial(entrada.material);
-    } else {
+    } else if (entrada.tipo == TipoEntNGE::transformacion) {
       glMatrixMode(GL_MODELVIEW);
-      /* void glMultMatrixf(	const GLfloat * m);        */
       /* Multiplica la matriz actual por la especificada */
       glMultMatrixf(*(entrada.matriz));
     }
@@ -418,6 +424,7 @@ BrazoMecanico::BrazoMecanico() {
 
 EscenaP4::Lata::Lata() {
   ponerNombre("lata de cocacola");
+  ponerIdentificador(1232353);
 
   agregar(MAT_Escalado(1.5, 1.5, 1.5));
 
@@ -430,16 +437,19 @@ EscenaP4::Lata::Lata() {
 }
 
 EscenaP4::Peones::PeonNegro::PeonNegro() {
+  ponerIdentificador(21212);
   agregar(new MaterialPeonNegro);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
 }
 
 EscenaP4::Peones::PeonBlanco::PeonBlanco() {
+  ponerIdentificador(323243);
   agregar(new MaterialPeonBlanco);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, true));
 }
 
 EscenaP4::Peones::PeonMadera::PeonMadera() {
+  ponerIdentificador(0);
   agregar(new MaterialPeonMadera);
   agregar(new MallaRevol("../plys/peon.ply", 30, true, false, false));
 }
