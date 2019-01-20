@@ -501,13 +501,13 @@ ColFuentesLuz::~ColFuentesLuz() {
 //******************************************************************************
 
 MaterialLata::MaterialLata()
-    : Material(new Textura("../imgs/lata-coke.jpg"), 0.5, 0.3, 0.2, 5.0) {}
+    : Material(new Textura("../imgs/lata-coke.jpg"), 0.7, 0.5, 1.0, 10.0) {}
 
-MaterialTapasLata::MaterialTapasLata() : Material(Tupla3f{0.7,0.7,0.7}, 0.5, 0.2, 0.3, 5.0) {}
+MaterialTapasLata::MaterialTapasLata() : Material(Tupla3f{0.7,0.7,0.7}, 0.8, 0.0, 1.0, 5.0) {}
 
 MaterialPeonNegro::MaterialPeonNegro() : Material(Tupla3f{0.3,0.3,0.3}, 0.0, 0.1, 0.9, 5.0) {}
 
-MaterialPeonBlanco::MaterialPeonBlanco() : Material(Tupla3f{1.0,1.0,1.0}, 0.85, 0.075, 0.075, 5.0) {}
+MaterialPeonBlanco::MaterialPeonBlanco() : Material(Tupla3f{1.0,1.0,1.0}, 0.7, 0.1, 0.7, 5.0) {}
 
 MaterialPeonMadera::MaterialPeonMadera()
     : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.2, 1.0, 0.4, 1.0) {}
